@@ -1,7 +1,5 @@
 # 🖥️ Agam Makhija — 3D Retro Workstation & AgamOS 98
 
-An interactive, immersive 3D developer portfolio and retro desktop operating system inspired by [Henry Heffernan's portfolio](https://github.com/henryjeff/portfolio-website) (`henryheffernan.com`).
-
 Built with **Three.js**, **WebGL**, **HTML5 Canvas**, **CSS3**, and the **Web Audio API**, this portfolio takes visitors back to the golden era of late 90s computing.
 
 ---
