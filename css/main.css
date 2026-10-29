@@ -177,3 +177,71 @@ html, body {
   border-bottom: 2px solid #808080;
 }
 
+/* ==========================================================================
+   Resident Evil Style Sticky Note Inspection Overlay
+   ========================================================================== */
+.sticky-inspect-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 30;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
+}
+
+.sticky-inspect-overlay.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.inspect-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.1) 30%, rgba(0, 0, 0, 0.75) 100%);
+}
+
+.inspect-hud-box {
+  position: absolute;
+  bottom: 26px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(15, 23, 42, 0.92);
+  border: 1px solid rgba(250, 204, 21, 0.65);
+  box-shadow: 0 0 25px rgba(234, 179, 8, 0.25), 0 10px 30px rgba(0, 0, 0, 0.8);
+  padding: 8px 22px;
+  border-radius: 4px;
+  font-family: "Courier New", Courier, monospace, serif;
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  color: #fef08a;
+  text-transform: uppercase;
+}
+
+.inspect-tag {
+  color: #facc15;
+  font-weight: 800;
+}
+
+.inspect-sep {
+  color: #64748b;
+}
+
+.inspect-desc {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.inspect-hint {
+  font-size: 11px;
+  color: #94a3b8;
+  letter-spacing: 0.5px;
+  margin-left: 6px;
+}
+

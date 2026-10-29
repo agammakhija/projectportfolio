@@ -26,7 +26,7 @@ Built with **Three.js**, **WebGL**, **HTML5 Canvas**, **CSS3**, and the **Web Au
 3. **🐍 Skills Matrix**: Dedicated technical mastery showcase strictly focused on Python 3 Programming and AI Prompt Engineering (System Prompts, CoT Reasoning, Few-Shot, Schema Enforcement).
 4. **🎓 Academic Education**: Complete academic credentials highlighting Newton School of Technology (2026–2030, Ongoing B.Tech CSE AI/ML) and Prodigy Public School (2024–2026).
 5. **💻 Agam-DOS Terminal**: Real interactive command prompt powered by the `agam` executable. Features a complete manual (`agam man`), required `agam` prefix command handling, the 5-point directory system (`agam skills`, `agam education`, `agam portfolio`, `agam contacts`, `agam about`), one-click file downloads, matrix digital rain, and custom themes.
-6. **🎵 Winamp Media Player**: Retro audio player with green LCD marquee, animated 16-band audio spectrum visualizer, and real-time synthesized chiptune & synthwave tracks!
+6. **🎵 Winamp Media Player**: Retro audio player with green LCD marquee, animated 16-band audio spectrum visualizer, and real-time synthesized **Spider-Man theme soundtracks** (1967 Classic Theme, 2002 Danny Elfman Theme, and 1994 Animated Series Theme)!
 7. **💣 Minesweeper**: Fully playable 9x9 retro game with 7-segment digital displays and smiley face reactions.
 8. **⛏️ Craft98 — Minecraft Alpha 3D**: Enhanced 3D voxel sandbox! Explore procedural rolling voxel terrain, chop oak trees, mine blocks with debris particle physics, place structures, switch blocks with hotbar 1-9 or scroll wheel, see your 3D in-hand held block with swing animations, walk with WASD, jump with Space, and press `F` for Creative Flight mode!
 9. **🎨 MS Paint**: Interactive canvas drawing app with a 16-color retro palette, brush sizes, and PNG export.
@@ -35,7 +35,7 @@ Built with **Three.js**, **WebGL**, **HTML5 Canvas**, **CSS3**, and the **Web Au
 12. **🗑️ Recycle Bin**: Easter eggs, jokes, and funny developer relics.
 
 ### 4. 🔊 Web Audio API Synthesizer (Zero External Audio Dependencies)
-- Algorithmic chiptune and synthwave music generation (kick, snare, bassline, arpeggiated lead).
+- Real-time synthesis of iconic Spider-Man soundtracks ('67 Theme, '02 Elfman Theme, '94 Animated Series).
 - Authentic Windows 98 polyphonic startup chime.
 - Tactile mechanical switch and button click sounds.
 - Window swooshes and retro error alerts.

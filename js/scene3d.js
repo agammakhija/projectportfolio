@@ -451,40 +451,54 @@ class RetroScene {
     nctx.fillStyle = paperGrad;
     nctx.fillRect(0, 0, 512, 512);
 
-    // Top glue strip shadow
-    nctx.fillStyle = "rgba(234, 179, 8, 0.4)";
-    nctx.fillRect(0, 0, 512, 45);
+    // Subtle faint notebook lines
+    nctx.strokeStyle = "rgba(180, 130, 20, 0.15)";
+    nctx.lineWidth = 1.5;
+    for (let y = 145; y < 450; y += 42) {
+      nctx.beginPath();
+      nctx.moveTo(35, y);
+      nctx.lineTo(477, y);
+      nctx.stroke();
+    }
 
-    // Pin badge at top
-    nctx.fillStyle = "#ef4444";
+    // Top glue strip shadow
+    nctx.fillStyle = "rgba(202, 138, 4, 0.35)";
+    nctx.fillRect(0, 0, 512, 48);
+
+    // Red push pin at top center
+    nctx.fillStyle = "#dc2626";
     nctx.beginPath();
     nctx.arc(256, 25, 14, 0, Math.PI * 2);
     nctx.fill();
     nctx.fillStyle = "#ffffff";
     nctx.beginPath();
-    nctx.arc(252, 21, 4, 0, Math.PI * 2);
+    nctx.arc(251, 21, 5, 0, Math.PI * 2);
     nctx.fill();
 
-    // Handwritten note text
+    // Subtle drop shadow under pin
+    nctx.fillStyle = "rgba(0, 0, 0, 0.2)";
+    nctx.beginPath();
+    nctx.arc(258, 36, 8, 0, Math.PI * 2);
+    nctx.fill();
+
+    // Handwritten header
+    nctx.fillStyle = "#1e1b4b";
+    nctx.font = "bold 32px 'Comic Sans MS', 'Chalkboard SE', 'Marker Felt', cursive, sans-serif";
+    nctx.fillText("📌 MEMO // AGAM:", 45, 100);
+
+    // Bullet points
+    nctx.font = "bold 23px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
     nctx.fillStyle = "#0f172a";
-    nctx.font = "bold 34px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
-    nctx.fillText("📌 QUICK NOTE:", 45, 95);
-
-    nctx.font = "bold 26px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
-    nctx.fillStyle = "#1e293b";
-    nctx.fillText("• Click screen to enter", 45, 160);
-    nctx.fillText("  AgamOS 98 desktop!", 75, 200);
-
-    nctx.fillStyle = "#0369a1";
-    nctx.fillText("• Play Minecraft 3D! ⛏️", 45, 260);
-
-    nctx.fillStyle = "#1e293b";
-    nctx.fillText("• Drag & resize windows", 45, 320);
-    nctx.fillText("• Winamp has 8-bit tracks", 45, 370);
+    nctx.fillText("• Click screen to enter AgamOS", 45, 160);
+    nctx.fillText("• Spider-Man portfolio inside 🕷️", 45, 204);
+    nctx.fillText("• Play Minecraft 3D voxel world ⛏️", 45, 248);
+    nctx.fillText("• Python 3 & AI Prompt Specialist 🐍", 45, 292);
+    nctx.fillText("• Terminal commands: 'agam skills'", 45, 336);
+    nctx.fillText("• Winamp plays Spider-Man tracks 🎵", 45, 380);
 
     nctx.fillStyle = "#7c3aed";
-    nctx.font = "bold 28px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
-    nctx.fillText("✨ Agam Makhija '98", 160, 455);
+    nctx.font = "bold 26px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
+    nctx.fillText("✨ Agam Makhija — 1998", 120, 460);
 
     const noteTex = new THREE.CanvasTexture(noteCanvas);
     noteTex.minFilter = THREE.LinearFilter;
@@ -492,7 +506,8 @@ class RetroScene {
 
     const noteMat = new THREE.MeshStandardMaterial({
       map: noteTex,
-      roughness: 0.8,
+      roughness: 0.85,
+      emissive: new THREE.Color(0x181404),
       polygonOffset: true,
       polygonOffsetFactor: -2,
       polygonOffsetUnits: -2
@@ -525,6 +540,24 @@ class RetroScene {
     this.interactiveObjects.push(this.crtScreenMesh);
     this.interactiveObjects.push(powerBtn);
     this.interactiveObjects.push(stickyNote);
+
+    // Resident Evil inspection references & state
+    this.stickyNote = stickyNote;
+    this.noteShadow = noteShadow;
+    this.isStickyNoteHovered = false;
+    this.noteZoomProgress = 0;
+
+    // Resting pinned state on monitor bezel
+    this.stickyBasePos = new THREE.Vector3(-0.44, 1.88, 0.348);
+    this.stickyBaseRot = new THREE.Vector3(0, 0.03, -0.06);
+    this.stickyBaseScale = new THREE.Vector3(1.0, 1.0, 1.0);
+
+    // Resident Evil Close-up Inspect state (Centered right in front of camera)
+    this.stickyInspectPos = new THREE.Vector3(0, 1.58, 2.12);
+    this.stickyInspectRot = new THREE.Vector3(0.12, 0, -0.015);
+    this.stickyInspectScale = new THREE.Vector3(2.85, 2.85, 2.85);
+
+    this.inspectOverlayEl = document.getElementById("sticky-inspect-overlay");
   }
 
   // --- Dynamic CRT Screen Texture Generator ---
@@ -955,15 +988,29 @@ class RetroScene {
 
   setCameraView(mode) {
     this.cameraMode = mode;
-    if (!this.targetPos || !this.targetLookAt) return;
     if (mode === "monitor") {
+      this.isStickyNoteHovered = false;
+      this.showInspectOverlay(false);
       // Zoom directly into CRT monitor screen
-      this.targetPos.set(0, 1.54, 1.25);
-      this.targetLookAt.set(0, 1.54, 0.33);
+      if (this.targetPos && this.targetLookAt) {
+        this.targetPos.set(0, 1.54, 1.25);
+        this.targetLookAt.set(0, 1.54, 0.33);
+      }
     } else {
       // Overview Desk Mode
-      this.targetPos.set(0, 1.8, 3.8);
-      this.targetLookAt.set(0, 1.35, 0);
+      if (this.targetPos && this.targetLookAt) {
+        this.targetPos.set(0, 1.8, 3.8);
+        this.targetLookAt.set(0, 1.35, 0);
+      }
+    }
+  }
+
+  showInspectOverlay(show) {
+    if (!this.inspectOverlayEl) {
+      this.inspectOverlayEl = document.getElementById("sticky-inspect-overlay");
+    }
+    if (this.inspectOverlayEl) {
+      this.inspectOverlayEl.classList.toggle("active", show);
     }
   }
 
@@ -973,15 +1020,42 @@ class RetroScene {
     this.mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
     this.mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
-    // Smooth parallax in desk view
+    // Smooth parallax in desk view (subtly reduced when inspecting note for reading comfort)
     if (this.cameraMode === "desk") {
-      this.mouseTarget.x = (e.clientX / window.innerWidth - 0.5) * 0.4;
-      this.mouseTarget.y = (e.clientY / window.innerHeight - 0.5) * 0.25;
+      const parallaxFactor = this.isStickyNoteHovered ? 0.15 : 0.4;
+      this.mouseTarget.x = (e.clientX / window.innerWidth - 0.5) * parallaxFactor;
+      this.mouseTarget.y = (e.clientY / window.innerHeight - 0.5) * (parallaxFactor * 0.65);
     }
 
     // Raycast hover check
     this.raycaster.setFromCamera(this.mouse, this.camera);
     const intersects = this.raycaster.intersectObjects(this.interactiveObjects, true);
+
+    let isNoteHit = false;
+    if (this.cameraMode === "desk" && intersects.length > 0) {
+      let hit = intersects[0].object;
+      while (hit && !hit.name && hit.parent) {
+        hit = hit.parent;
+      }
+      if (hit && hit.name === "stickyNote") {
+        isNoteHit = true;
+      }
+    }
+
+    // Resident Evil Style Sticky Note Zoom Inspection Trigger
+    if (isNoteHit) {
+      if (!this.isStickyNoteHovered) {
+        this.isStickyNoteHovered = true;
+        if (window.audioEngine) window.audioEngine.playPaperInspect();
+        this.showInspectOverlay(true);
+      }
+    } else {
+      if (this.isStickyNoteHovered) {
+        this.isStickyNoteHovered = false;
+        if (window.audioEngine) window.audioEngine.playPaperPutDown();
+        this.showInspectOverlay(false);
+      }
+    }
 
     if (intersects.length > 0) {
       document.body.style.cursor = "pointer";
@@ -1010,6 +1084,8 @@ class RetroScene {
 
       if (name === "crtScreen" || name === "crtMonitor" || name === "stickyNote") {
         if (this.cameraMode === "desk") {
+          this.isStickyNoteHovered = false;
+          this.showInspectOverlay(false);
           window.dispatchEvent(new CustomEvent("enterAgamOS"));
         }
       } else if (name === "lampSwitch" || name === "lampShade" || name === "deskLamp") {
@@ -1052,7 +1128,43 @@ class RetroScene {
       this.screenTexture.needsUpdate = true;
     }
 
-    // 3. Smooth Camera Transitions & Parallax
+    // 3. Resident Evil Style Sticky Note Zoom & Inspection Animation
+    if (this.stickyNote && this.stickyBasePos && this.stickyInspectPos) {
+      const targetProgress = (this.isStickyNoteHovered && this.cameraMode === "desk") ? 1.0 : 0.0;
+      this.noteZoomProgress += (targetProgress - this.noteZoomProgress) * 0.12;
+
+      const p = this.noteZoomProgress;
+      // Smooth cubic ease-out
+      const easeP = 1 - Math.pow(1 - p, 3);
+
+      // Interpolate position from monitor bezel towards player's view
+      this.stickyNote.position.lerpVectors(this.stickyBasePos, this.stickyInspectPos, easeP);
+
+      // Subtle atmospheric floating/breathing sway when inspected
+      if (p > 0.01) {
+        const floatY = Math.sin(elapsed * 2.4) * 0.007 * easeP;
+        const floatRotZ = Math.cos(elapsed * 1.8) * 0.004 * easeP;
+        this.stickyNote.position.y += floatY;
+
+        this.stickyNote.rotation.x = THREE.MathUtils.lerp(this.stickyBaseRot.x, this.stickyInspectRot.x, easeP);
+        this.stickyNote.rotation.y = THREE.MathUtils.lerp(this.stickyBaseRot.y, this.stickyInspectRot.y, easeP);
+        this.stickyNote.rotation.z = THREE.MathUtils.lerp(this.stickyBaseRot.z, this.stickyInspectRot.z + floatRotZ, easeP);
+      } else {
+        this.stickyNote.rotation.set(this.stickyBaseRot.x, this.stickyBaseRot.y, this.stickyBaseRot.z);
+      }
+
+      // Interpolate scale (magnify by 2.85x for full legible examination)
+      this.stickyNote.scale.lerpVectors(this.stickyBaseScale, this.stickyInspectScale, easeP);
+
+      // Note shadow fades and expands as note lifts off the monitor
+      if (this.noteShadow) {
+        this.noteShadow.material.opacity = 0.35 * (1 - easeP * 0.85);
+        const shadowScale = 1.0 + easeP * 0.4;
+        this.noteShadow.scale.set(shadowScale, shadowScale, 1.0);
+      }
+    }
+
+    // 4. Smooth Camera Transitions & Parallax
     this.mouseCurrent.x += (this.mouseTarget.x - this.mouseCurrent.x) * 0.05;
     this.mouseCurrent.y += (this.mouseTarget.y - this.mouseCurrent.y) * 0.05;
 
@@ -1069,7 +1181,7 @@ class RetroScene {
 
     this.camera.lookAt(this.currentLookAt);
 
-    // 4. Render
+    // 5. Render Scene
     this.renderer.render(this.scene, this.camera);
   }
 }
