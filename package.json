@@ -1,0 +1,22 @@
+{
+  "name": "agam-portfolio-3d-retro",
+  "version": "1.0.0",
+  "description": "Interactive 3D Retro Workstation and CRT Operating System Portfolio inspired by Henry Heffernan",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 3000",
+    "serve": "python3 -m http.server 3000"
+  },
+  "keywords": [
+    "portfolio",
+    "threejs",
+    "webgl",
+    "retro",
+    "windows-98",
+    "creative-coding",
+    "interactive"
+  ],
+  "author": "Agam Makhija <agam.makhija07@gmail.com>",
+  "license": "MIT"
+}
+

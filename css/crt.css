@@ -1,0 +1,119 @@
+/* ==========================================================================
+   CRT Shaders, Scanlines & Glass Curvature Simulation
+   ========================================================================== */
+
+/* CRT Bezel Frame when viewed in fullscreen / focused mode */
+#crt-screen-wrapper.fullscreen-mode #crt-screen-frame {
+  max-width: 96vw;
+  max-height: 92vh;
+  margin: auto;
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 16px #cec4b0,
+    0 0 0 20px #8a7f6c,
+    0 25px 60px -10px rgba(0, 0, 0, 0.9),
+    inset 0 0 60px rgba(0, 0, 0, 0.65);
+  position: relative;
+}
+
+/* Glass Screen Reflection & Barrel Curvature */
+#crt-screen-frame::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 20%,
+    rgba(0, 0, 0, 0) 50%,
+    rgba(0, 0, 0, 0.25) 100%
+  );
+  pointer-events: none;
+  z-index: 3000;
+  border-radius: 16px;
+}
+
+/* Scanlines Simulation */
+#crt-screen-frame::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.28) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 4px 100%;
+  pointer-events: none;
+  z-index: 3001;
+  opacity: 0.85;
+}
+
+/* Scanlines Toggle Class */
+#crt-screen-wrapper.no-scanlines #crt-screen-frame::after {
+  display: none !important;
+}
+
+/* Curvature Toggle Class */
+#crt-screen-wrapper.no-curve #crt-screen-frame {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+}
+
+#crt-screen-wrapper.no-curve #crt-screen-frame::before {
+  display: none !important;
+}
+
+/* Vignette Corner Shadowing */
+.crt-vignette {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 2999;
+  border-radius: 16px;
+}
+
+/* Phosphor Color Theme Filters */
+#crt-screen-wrapper.crt-green {
+  filter: hue-rotate(85deg) saturate(2.5) brightness(0.95);
+}
+
+#crt-screen-wrapper.crt-amber {
+  filter: sepia(1) saturate(3) hue-rotate(350deg) brightness(1.05);
+}
+
+/* Exit to Room Pill Button */
+.crt-exit-pill {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  z-index: 3050;
+  background: rgba(15, 23, 42, 0.75);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.crt-exit-pill:hover {
+  background: #0284c7;
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+

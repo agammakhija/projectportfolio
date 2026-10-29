@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Agam Makhija — Interactive 3D Portfolio & AgamOS 98</title>
+  <meta name="description" content="Personal portfolio of software engineer & creative developer Agam Makhija. Featuring a 3D retro workstation room and a simulated 90s CRT operating system.">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220%22><text y=%2226%22 font-size=%2224%22>💻</text></svg>">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/os.css">
+  <link rel="stylesheet" href="css/crt.css">
+  <link rel="stylesheet" href="css/apps.css">
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div id="app">
+    <!-- Top Floating HUD Navigation -->
+    <header class="hud-header">
+      <div class="hud-brand">
+        <span>AGAM MAKHIJA</span>
+        <span class="hud-badge">PORTFOLIO '98</span>
+      </div>
+      <div class="hud-controls">
+        <button id="hud-btn-view" class="hud-btn hud-btn-primary" title="Toggle between 3D Room and Focused CRT Screen">
+          <span>📺 Enter AgamOS (Screen)</span>
+        </button>
+        <button id="hud-btn-lamp" class="hud-btn active" title="Toggle Desk Lamp">
+          <span>💡 Lamp: ON</span>
+        </button>
+        <button id="hud-btn-sound" class="hud-btn" title="Toggle Sound & Synthesizer">
+          <span>🔊 Sound: ON</span>
+        </button>
+        <button id="hud-btn-crt" class="hud-btn" title="Toggle Retro CRT Scanlines">
+          <span>📺 CRT FX: ON</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 3D WebGL Canvas Layer -->
+    <div id="canvas-container"></div>
+
+    <!-- Retro CRT Operating System Layer -->
+    <div id="crt-screen-wrapper">
+      <div id="crt-screen-frame">
+        <div class="crt-vignette"></div>
+        <button id="crt-exit-btn" class="crt-exit-pill" title="Return to 3D Room Overview">🪑 3D Room View</button>
+
+        <!-- Desktop Environment -->
+        <main id="desktop" class="desktop wp-teal">
+          <!-- Desktop Icons -->
+          <div class="desktop-icons-container">
+            <div class="desktop-icon" data-app="about">
+              <span class="icon-img">👤</span>
+              <span class="icon-label">About Me</span>
+            </div>
+            <div class="desktop-icon" data-app="projects">
+              <span class="icon-img">🚀</span>
+              <span class="icon-label">Projects</span>
+            </div>
+            <div class="desktop-icon" data-app="resume">
+              <span class="icon-img">📄</span>
+              <span class="icon-label">Resume</span>
+            </div>
+            <div class="desktop-icon" data-app="terminal">
+              <span class="icon-img">💻</span>
+              <span class="icon-label">Terminal</span>
+            </div>
+            <div class="desktop-icon" data-app="music">
+              <span class="icon-img">🎵</span>
+              <span class="icon-label">Winamp</span>
+            </div>
+            <div class="desktop-icon" data-app="minesweeper">
+              <span class="icon-img">💣</span>
+              <span class="icon-label">Minesweeper</span>
+            </div>
+            <div class="desktop-icon" data-app="minecraft">
+              <span class="icon-img">⛏️</span>
+              <span class="icon-label">Minecraft 3D</span>
+            </div>
+            <div class="desktop-icon" data-app="paint">
+              <span class="icon-img">🎨</span>
+              <span class="icon-label">Paint</span>
+            </div>
+            <div class="desktop-icon" data-app="contact">
+              <span class="icon-img">✉️</span>
+              <span class="icon-label">Contact Me</span>
+            </div>
+            <div class="desktop-icon" data-app="settings">
+              <span class="icon-img">⚙️</span>
+              <span class="icon-label">Settings</span>
+            </div>
+            <div class="desktop-icon" data-app="recycle">
+              <span class="icon-img">🗑️</span>
+              <span class="icon-label">Recycle Bin</span>
+            </div>
+          </div>
+
+          <!-- Application Window 1: About Me -->
+          <div id="win-about" class="window hidden" data-title="About Me — Agam Makhija" data-icon="👤" style="width: 620px; height: 440px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">👤</span>
+                <span class="window-title-text">About Me — Agam Makhija</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>V</u>iew</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content">
+              <div class="about-container">
+                <div class="about-header">
+                  <div class="about-avatar">👨‍💻</div>
+                  <div class="about-title-block">
+                    <h2 id="about-name">Agam Makhija</h2>
+                    <div id="about-title" class="about-subtitle">Software Engineer & Creative Developer</div>
+                    <div id="about-tagline" class="about-tagline">Crafting immersive digital experiences & intelligent platforms.</div>
+                  </div>
+                </div>
+
+                <div id="about-stats" class="about-stats-grid"></div>
+
+                <div id="about-bio" class="about-bio-text"></div>
+
+                <div class="skills-wrapper">
+                  <h3>Technical Mastery & Stack</h3>
+                  <div id="about-skills"></div>
+                </div>
+              </div>
+            </div>
+            <div class="window-statusbar">
+              <span>Ready</span>
+              <span>AgamOS 98 Personal Profile</span>
+            </div>
+          </div>
+
+          <!-- Application Window 2: Projects Explorer -->
+          <div id="win-projects" class="window hidden" data-title="Projects Explorer" data-icon="🚀" style="width: 740px; height: 480px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">🚀</span>
+                <span class="window-title-text">Projects Explorer — C:\PORTFOLIO\PROJECTS</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>V</u>iew</span>
+              <span><u>T</u>ools</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content">
+              <div class="projects-container">
+                <div class="projects-toolbar">
+                  <span style="font-size: 11px; font-weight: bold; margin-right: 4px;">Filter:</span>
+                  <button class="project-filter-btn active" data-filter="all">All Projects</button>
+                  <button class="project-filter-btn" data-filter="full-stack">Full-Stack</button>
+                  <button class="project-filter-btn" data-filter="3d">3D & WebGL</button>
+                  <button class="project-filter-btn" data-filter="systems">Systems</button>
+                  <button class="project-filter-btn" data-filter="creative">Creative / Audio</button>
+                </div>
+                <div id="projects-grid" class="projects-grid"></div>
+              </div>
+            </div>
+            <div class="window-statusbar">
+              <span>6 Objects</span>
+              <span>All Systems Go</span>
+            </div>
+          </div>
+
+          <!-- Application Window 3: Resume -->
+          <div id="win-resume" class="window hidden" data-title="Resume — Agam Makhija.doc" data-icon="📄" style="width: 660px; height: 500px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">📄</span>
+                <span class="window-title-text">WordPad — Resume_Agam_Makhija.doc</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>F</u>ormat</span>
+              <span><u>P</u>rint</span>
+            </div>
+            <div class="window-content">
+              <div class="resume-container">
+                <div class="resume-header">
+                  <div class="resume-header-info">
+                    <h2>Agam Makhija</h2>
+                    <p>Software Engineer | Creative Developer | agam.makhija07@gmail.com</p>
+                  </div>
+                  <button id="resume-btn-print" class="retro-btn btn-sm">🖨️ Print / Save PDF</button>
+                </div>
+
+                <div class="resume-section">
+                  <h3 class="resume-section-title">Professional Experience</h3>
+                  <div id="resume-experience"></div>
+                </div>
+
+                <div class="resume-section">
+                  <h3 class="resume-section-title">Education</h3>
+                  <div id="resume-education"></div>
+                </div>
+              </div>
+            </div>
+            <div class="window-statusbar">
+              <span>For Help, press F1</span>
+              <span>Document Mode: WordPad 98</span>
+            </div>
+          </div>
+
+          <!-- Application Window 4: Agam-DOS Terminal -->
+          <div id="win-terminal" class="window hidden" data-title="Agam-DOS Prompt" data-icon="💻" style="width: 640px; height: 420px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">💻</span>
+                <span class="window-title-text">MS-DOS Prompt — C:\AGAM\PORTFOLIO</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-content terminal-window-content">
+              <div class="terminal-output"></div>
+              <div class="terminal-input-row">
+                <span class="terminal-prompt">C:\AGAM&gt;</span>
+                <input type="text" class="terminal-input" autofocus spellcheck="false" autocomplete="off">
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 5: Winamp Media Player -->
+          <div id="win-music" class="window hidden" data-title="Winamp 1998" data-icon="🎵" style="width: 380px; height: 260px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">🎵</span>
+                <span class="window-title-text">WINAMP — Synthesizer Edition</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-content" style="padding: 4px; background: #27272a;">
+              <div class="music-player-container">
+                <div class="player-lcd-display">
+                  <div class="player-track-marquee">
+                    <span class="player-track-title">Loading track...</span>
+                  </div>
+                  <div class="player-lcd-info-row">
+                    <span class="player-time-display">00:00</span>
+                    <span class="player-kbps">128 kbps 44.1kHz</span>
+                  </div>
+                </div>
+
+                <canvas class="player-visualizer-canvas" width="340" height="48"></canvas>
+
+                <div class="player-controls-row">
+                  <div class="player-btn-group">
+                    <button class="player-btn player-btn-prev" title="Previous Track">⏮</button>
+                    <button class="player-btn player-btn-play" title="Play / Pause">▶</button>
+                    <button class="player-btn player-btn-next" title="Next Track">⏭</button>
+                  </div>
+                  <div class="player-volume-box">
+                    <span>VOL:</span>
+                    <input type="range" class="player-volume" min="0" max="1" step="0.05" value="0.7">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 6: Minesweeper -->
+          <div id="win-minesweeper" class="window hidden" data-title="Minesweeper" data-icon="💣" style="width: 250px; height: 310px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">💣</span>
+                <span class="window-title-text">Minesweeper</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>G</u>ame</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content" style="padding: 4px; background: #c0c0c0; display:flex; justify-content:center;">
+              <div class="minesweeper-container">
+                <div class="mine-header">
+                  <div class="mine-counter mine-counter-mines">010</div>
+                  <button class="mine-face-btn">🙂</button>
+                  <div class="mine-counter mine-counter-timer">000</div>
+                </div>
+                <div class="mine-grid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 7: Paint -->
+          <div id="win-paint" class="window hidden" data-title="untitled - Paint" data-icon="🎨" style="width: 520px; height: 380px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">🎨</span>
+                <span class="window-title-text">untitled - Paint</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>I</u>mage</span>
+              <span><u>O</u>ptions</span>
+            </div>
+            <div class="window-content" style="padding: 4px; display: flex; flex-direction: column;">
+              <div class="paint-container">
+                <div class="paint-toolbar">
+                  <div class="paint-tools-group">
+                    <button class="paint-tool-btn selected" data-tool="brush" title="Brush">🖌️</button>
+                    <button class="paint-tool-btn" data-tool="pencil" title="Pencil">✏️</button>
+                    <button class="paint-tool-btn" data-tool="eraser" title="Eraser">🧹</button>
+                  </div>
+                  <select class="paint-brush-size" title="Brush Size">
+                    <option value="2">2px Fine</option>
+                    <option value="5" selected>5px Normal</option>
+                    <option value="12">12px Bold</option>
+                    <option value="24">24px Thick</option>
+                  </select>
+                  <div class="paint-palette"></div>
+                  <button class="retro-btn btn-sm paint-btn-clear">Clear</button>
+                  <button class="retro-btn btn-sm paint-btn-save">💾 Save</button>
+                </div>
+                <div class="paint-canvas-wrapper">
+                  <canvas class="paint-canvas" width="600" height="380"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 8: Contact Me -->
+          <div id="win-contact" class="window hidden" data-title="Compose: Contact Agam Makhija" data-icon="✉️" style="width: 520px; height: 420px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">✉️</span>
+                <span class="window-title-text">Outlook Express — New Message</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>I</u>nsert</span>
+              <span><u>F</u>ormat</span>
+            </div>
+            <div class="window-content">
+              <div class="contact-container">
+                <div class="contact-info-banner">
+                  📬 Send a direct message to <b>agam.makhija07@gmail.com</b>. I'll get back to you promptly!
+                </div>
+                <form id="contact-form" class="contact-form">
+                  <div class="contact-field">
+                    <label>Your Name:</label>
+                    <input type="text" id="contact-name" class="contact-input" placeholder="e.g. Ada Lovelace" required>
+                  </div>
+                  <div class="contact-field">
+                    <label>Your Email:</label>
+                    <input type="email" id="contact-email" class="contact-input" placeholder="e.g. ada@example.com" required>
+                  </div>
+                  <div class="contact-field">
+                    <label>Subject:</label>
+                    <input type="text" id="contact-subject" class="contact-input" placeholder="Excited to build something together..." required>
+                  </div>
+                  <div class="contact-field">
+                    <label>Message:</label>
+                    <textarea id="contact-msg" class="contact-textarea" placeholder="Hello Agam, I saw your portfolio and would love to connect..." required></textarea>
+                  </div>
+                  <div class="contact-actions">
+                    <div class="social-links-row">
+                      <a href="https://github.com/agammakhija" target="_blank" class="social-link-icon">GitHub</a>
+                      <a href="https://linkedin.com/in/agammakhija" target="_blank" class="social-link-icon">LinkedIn</a>
+                      <a href="https://x.com/agammakhija" target="_blank" class="social-link-icon">X / Twitter</a>
+                    </div>
+                    <button type="submit" class="retro-btn btn-primary">📤 Send Message</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 9: Display Settings -->
+          <div id="win-settings" class="window hidden" data-title="Display Properties" data-icon="⚙️" style="width: 440px; height: 380px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">⚙️</span>
+                <span class="window-title-text">Display Properties</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-content">
+              <div class="settings-container">
+                <div class="settings-box">
+                  <h4>CRT Phosphor Mode</h4>
+                  <div class="theme-options-grid">
+                    <button class="crt-theme-option selected" data-theme="color">RGB Full Color</button>
+                    <button class="crt-theme-option" data-theme="green">Matrix Green P1</button>
+                    <button class="crt-theme-option" data-theme="amber">Retro Amber P3</button>
+                  </div>
+                </div>
+
+                <div class="settings-box">
+                  <h4>Desktop Wallpaper</h4>
+                  <div class="wallpaper-options-grid">
+                    <button class="wallpaper-option selected" data-wallpaper="teal">Windows Teal</button>
+                    <button class="wallpaper-option" data-wallpaper="cyber">Cyber Midnight</button>
+                    <button class="wallpaper-option" data-wallpaper="starfield">Starfield</button>
+                    <button class="wallpaper-option" data-wallpaper="matrix">Matrix Code</button>
+                  </div>
+                </div>
+
+                <div class="settings-box">
+                  <h4>Screen Effects</h4>
+                  <label class="settings-checkbox-row">
+                    <input type="checkbox" id="toggle-scanlines" checked>
+                    <span>Simulate CRT Scanlines</span>
+                  </label>
+                  <label class="settings-checkbox-row">
+                    <input type="checkbox" id="toggle-curvature" checked>
+                    <span>Simulate Curved Tube Glass Bezel</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Application Window 10: Recycle Bin -->
+          <div id="win-recycle" class="window hidden" data-title="Recycle Bin" data-icon="🗑️" style="width: 420px; height: 300px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">🗑️</span>
+                <span class="window-title-text">Recycle Bin</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>E</u>dit</span>
+              <span><u>V</u>iew</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content">
+              <div id="recycle-bin-items" class="recycle-bin-container"></div>
+            </div>
+          </div>
+
+          <!-- Application Window 11: Minecraft Alpha 3D -->
+          <div id="win-minecraft" class="window hidden" data-title="Craft98 — Minecraft Alpha 3D" data-icon="⛏️" style="width: 720px; height: 490px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">⛏️</span>
+                <span class="window-title-text">Craft98 — Minecraft Alpha 3D</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>G</u>ame</span>
+              <span><u>W</u>orld</span>
+              <span><u>O</u>ptions</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content minecraft-window-content">
+              <div class="minecraft-viewport">
+                <canvas id="minecraft-canvas"></canvas>
+                <div class="mc-crosshair"></div>
+                <div class="mc-hotbar"></div>
+                <div class="mc-start-overlay">
+                  <div class="mc-title">⛏️ CRAFT98 // MINECRAFT 3D</div>
+                  <div class="mc-instructions">
+                    <b>Controls:</b><br>
+                    <span>WASD / Arrow Keys</span> to Walk &bull; <span>Space</span> to Jump<br>
+                    <span>Left Click</span>: Mine / Break Block<br>
+                    <span>Right Click</span>: Place Selected Block<br>
+                    <span>Keys 1-9</span> or Hotbar to Select Block<br>
+                    <span>ESC</span> to Release Mouse Cursor
+                  </div>
+                  <div class="mc-click-prompt">CLICK TO PLAY IN FULL 3D</div>
+                </div>
+              </div>
+            </div>
+            <div class="window-statusbar">
+              <span>Mode: Voxel Creative Sandbox</span>
+              <span>60 FPS &bull; Alpha 1.0</span>
+            </div>
+          </div>
+        </main>
+
+        <!-- Windows 98 Taskbar -->
+        <footer class="taskbar">
+          <button id="start-btn" class="start-button">
+            <span class="start-icon">🪟</span>
+            <span>Start</span>
+          </button>
+
+          <div id="taskbar-apps" class="taskbar-apps"></div>
+
+          <div class="system-tray">
+            <span class="tray-icon" title="Audio Synthesizer Active">🔊</span>
+            <span class="tray-icon" title="AgamOS 98 Connected">🖧</span>
+            <span id="tray-clock" class="tray-clock">12:00 PM</span>
+          </div>
+        </footer>
+
+        <!-- Start Menu Popup -->
+        <div id="start-menu" class="start-menu">
+          <div class="start-menu-banner">
+            <span class="banner-text">AgamOS 98</span>
+          </div>
+          <div class="start-menu-items">
+            <div class="start-item" data-app="about">
+              <span class="start-item-icon">👤</span>
+              <span>About Agam</span>
+            </div>
+            <div class="start-item" data-app="projects">
+              <span class="start-item-icon">🚀</span>
+              <span>Projects</span>
+            </div>
+            <div class="start-item" data-app="resume">
+              <span class="start-item-icon">📄</span>
+              <span>Resume & Experience</span>
+            </div>
+            <div class="start-item" data-app="terminal">
+              <span class="start-item-icon">💻</span>
+              <span>MS-DOS Prompt</span>
+            </div>
+            <div class="start-divider"></div>
+            <div class="start-item" data-app="music">
+              <span class="start-item-icon">🎵</span>
+              <span>Winamp Media</span>
+            </div>
+            <div class="start-item" data-app="minesweeper">
+              <span class="start-item-icon">💣</span>
+              <span>Minesweeper</span>
+            </div>
+            <div class="start-item" data-app="minecraft">
+              <span class="start-item-icon">⛏️</span>
+              <span>Minecraft 3D</span>
+            </div>
+            <div class="start-item" data-app="paint">
+              <span class="start-item-icon">🎨</span>
+              <span>Paint Studio</span>
+            </div>
+            <div class="start-divider"></div>
+            <div class="start-item" data-app="contact">
+              <span class="start-item-icon">✉️</span>
+              <span>Contact / Mail</span>
+            </div>
+            <div class="start-item" data-app="settings">
+              <span class="start-item-icon">⚙️</span>
+              <span>Display Settings</span>
+            </div>
+            <div class="start-divider"></div>
+            <div class="start-item" onclick="window.dispatchEvent(new CustomEvent('rebootAgamOS'))">
+              <span class="start-item-icon">🔄</span>
+              <span>Restart System...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BIOS & Windows 98 Boot Overlay -->
+    <div id="boot-overlay">
+      <div id="bios-screen">
+        <div class="bios-header">
+          <div>
+            <b>AGAM BIOS v4.51PG</b><br>
+            An Alliance of Creative Code & Systems Engineering<br>
+            Copyright (C) 1998-2026, Agam Makhija
+          </div>
+          <div class="bios-energy-logo">
+            [ENERGY STAR]
+          </div>
+        </div>
+        <p>Main Processor : Intel Pentium(R) II 400MHz</p>
+        <p>Memory Testing : 131072K OK</p>
+        <p>Primary Master : AGAM-HDD 10.4GB UDMA/33</p>
+        <p>Graphics Engine : Three.js WebGL 2.0 ACG Accelerated</p>
+        <p>Audio Engine : Web Audio API 16-Bit Polyphonic Synthesizer</p>
+        <br>
+        <p>Booting AgamOS 98 from Drive C: ...</p>
+      </div>
+
+      <div id="splash-screen">
+        <div class="splash-title">AgamOS 98</div>
+        <div class="splash-subtitle">Interactive 3D Portfolio Workstation</div>
+        <div class="boot-progress-bar">
+          <div id="boot-progress-fill"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Modules -->
+  <script src="js/data.js"></script>
+  <script src="js/audioEngine.js"></script>
+  <script src="js/scene3d.js"></script>
+  <script src="js/windowManager.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/musicPlayer.js"></script>
+  <script src="js/minesweeper.js"></script>
+  <script src="js/paint.js"></script>
+  <script src="js/minecraft.js"></script>
+  <script src="js/crtEffects.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
+
