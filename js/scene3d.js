@@ -554,9 +554,9 @@ class RetroScene {
     // Desktop Icons
     const icons = [
       { name: "About Me", x: 28, y: 30, color: "#38bdf8" },
-      { name: "Projects", x: 28, y: 110, color: "#fbbf24" },
-      { name: "Resume", x: 28, y: 190, color: "#f472b6" },
-      { name: "Terminal", x: 28, y: 270, color: "#22c55e" }
+      { name: "Portfolio", x: 28, y: 110, color: "#ef4444" },
+      { name: "Skills", x: 28, y: 190, color: "#22c55e" },
+      { name: "Education", x: 28, y: 270, color: "#fbbf24" }
     ];
 
     icons.forEach(ic => {
@@ -603,13 +603,14 @@ class RetroScene {
 
     ctx.fillStyle = "#1e293b";
     ctx.font = "bold 14px sans-serif";
-    ctx.fillText("Agam Makhija — Software Engineer", wx + 20, wy + 58);
+    ctx.fillText("Agam Makhija — Python 3 & AI Specialist", wx + 20, wy + 58);
     ctx.font = "12px sans-serif";
+    ctx.fillStyle = "#0284c7";
+    ctx.fillText("Newton School of Technology • B.Tech CSE (AI/ML)", wx + 20, wy + 78);
     ctx.fillStyle = "#475569";
-    ctx.fillText("Full-Stack, Three.js 3D & Systems Architect", wx + 20, wy + 78);
     ctx.fillText("• Click screen to zoom in & enter AgamOS", wx + 20, wy + 110);
-    ctx.fillText("• Launch full interactive apps & terminal", wx + 20, wy + 130);
-    ctx.fillText("• Play retro games & listen to synthesized 8-bit tracks", wx + 20, wy + 150);
+    ctx.fillText("• Spider-Man portfolio embedded inside computer", wx + 20, wy + 130);
+    ctx.fillText("• Python 3 scripting & AI prompt engineering", wx + 20, wy + 150);
 
     // Button
     ctx.fillStyle = "#0284c7";

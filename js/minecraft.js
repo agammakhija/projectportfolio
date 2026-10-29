@@ -1,7 +1,11 @@
 /**
- * Craft98 — Minecraft Alpha 3D Engine for AgamOS
- * Pure Three.js Voxel Sandbox with procedural 16x16 pixel textures,
- * first-person player controller, block breaking & placing, and hotbar!
+ * Craft98 — Minecraft Alpha 3D Engine for AgamOS (Enhanced Edition)
+ * Pure Three.js Voxel Sandbox featuring:
+ * - In-hand 3D block with swing/punch animations
+ * - Dual-mode controls: Pointer Lock + Drag-to-look fallback
+ * - Block break particles & Web Audio sound effects
+ * - Creative Flying mode (toggle with 'F')
+ * - 9-slot Hotbar, water/flower voxel world & new seed generator
  */
 
 class MinecraftApp {
@@ -20,28 +24,38 @@ class MinecraftApp {
     this.raycaster = null;
 
     // Voxel world data
-    this.worldSize = 18;
-    this.worldDepth = 8;
+    this.worldSize = 20;
     this.blocks = new Map(); // "x,y,z" => mesh
     this.blockMaterials = {};
     this.highlightBox = null;
+    this.particles = [];
+
+    // In-hand held block
+    this.handBlock = null;
+    this.isSwinging = false;
+    this.swingProgress = 0;
 
     // Player state
     this.player = {
-      pos: { x: 9, y: 7, z: 9 },
+      pos: { x: 10, y: 8, z: 10 },
       velocity: { x: 0, y: 0, z: 0 },
       yaw: 0,
       pitch: 0,
       isGrounded: false,
-      speed: 6.0,
-      jumpForce: 7.0
+      speed: 6.5,
+      jumpForce: 7.2,
+      isFlying: false
     };
 
     // Controls
     this.keys = {};
     this.isPointerLocked = false;
     this.isGameActive = false;
+    this.isDraggingLook = false;
+    this.lastMouseX = 0;
+    this.lastMouseY = 0;
     this.selectedBlockType = "grass";
+    this.stepAudioTimer = 0;
 
     // Block types
     this.blockTypes = [
@@ -68,6 +82,7 @@ class MinecraftApp {
     this.setupHotbar();
     this.buildTextures();
     this.setupThreeScene();
+    this.setupHandBlock();
     this.generateTerrain();
     this.setupEvents();
 
@@ -223,12 +238,12 @@ class MinecraftApp {
     this.blockMaterials = {
       dirt: new THREE.MeshLambertMaterial({ map: dirtTex }),
       grass: [
-        new THREE.MeshLambertMaterial({ map: grassSideTex }), // right
-        new THREE.MeshLambertMaterial({ map: grassSideTex }), // left
-        new THREE.MeshLambertMaterial({ map: grassTopTex }),  // top
-        new THREE.MeshLambertMaterial({ map: dirtTex }),      // bottom
-        new THREE.MeshLambertMaterial({ map: grassSideTex }), // front
-        new THREE.MeshLambertMaterial({ map: grassSideTex })  // back
+        new THREE.MeshLambertMaterial({ map: grassSideTex }),
+        new THREE.MeshLambertMaterial({ map: grassSideTex }),
+        new THREE.MeshLambertMaterial({ map: grassTopTex }),
+        new THREE.MeshLambertMaterial({ map: dirtTex }),
+        new THREE.MeshLambertMaterial({ map: grassSideTex }),
+        new THREE.MeshLambertMaterial({ map: grassSideTex })
       ],
       stone: new THREE.MeshLambertMaterial({ map: stoneTex }),
       wood: [
@@ -250,12 +265,12 @@ class MinecraftApp {
   // --- Three.js Scene Setup ---
 
   setupThreeScene() {
-    const width = this.canvas.clientWidth || 580;
-    const height = this.canvas.clientHeight || 360;
+    const width = this.canvas.clientWidth || 680;
+    const height = this.canvas.clientHeight || 400;
 
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x78a7ff); // Minecraft sky blue
-    this.scene.fog = new THREE.FogExp2(0x78a7ff, 0.035);
+    this.scene.background = new THREE.Color(0x78a7ff); // Minecraft Alpha sky
+    this.scene.fog = new THREE.FogExp2(0x78a7ff, 0.03);
 
     this.camera = new THREE.PerspectiveCamera(70, width / height, 0.1, 100);
     this.camera.position.set(this.player.pos.x, this.player.pos.y, this.player.pos.z);
@@ -271,33 +286,58 @@ class MinecraftApp {
     this.raycaster = new THREE.Raycaster();
 
     // Lighting
-    const ambient = new THREE.AmbientLight(0xffffff, 0.55);
+    const ambient = new THREE.AmbientLight(0xffffff, 0.65);
     this.scene.add(ambient);
 
-    const sun = new THREE.DirectionalLight(0xffffff, 0.85);
-    sun.position.set(15, 30, 20);
+    const sun = new THREE.DirectionalLight(0xffffff, 0.9);
+    sun.position.set(20, 35, 15);
     this.scene.add(sun);
 
     // Target Highlight Box Wireframe
-    const boxGeo = new THREE.BoxGeometry(1.005, 1.005, 1.005);
+    const boxGeo = new THREE.BoxGeometry(1.008, 1.008, 1.008);
     const boxEdges = new THREE.EdgesGeometry(boxGeo);
     const lineMat = new THREE.LineBasicMaterial({ color: 0x000000, linewidth: 2 });
     this.highlightBox = new THREE.LineSegments(boxEdges, lineMat);
     this.highlightBox.visible = false;
     this.scene.add(this.highlightBox);
 
-    // Clouds
-    const cloudGeo = new THREE.PlaneGeometry(80, 80);
+    // Floating Voxel Clouds
+    const cloudGeo = new THREE.PlaneGeometry(120, 120);
     const cloudMat = new THREE.MeshBasicMaterial({
       color: 0xffffff,
       transparent: true,
-      opacity: 0.75,
+      opacity: 0.8,
       side: THREE.DoubleSide
     });
     const clouds = new THREE.Mesh(cloudGeo, cloudMat);
     clouds.rotation.x = Math.PI / 2;
-    clouds.position.set(10, 16, 10);
+    clouds.position.set(10, 18, 10);
     this.scene.add(clouds);
+  }
+
+  // --- 3D In-Hand Held Block (Minecraft Perspective) ---
+
+  setupHandBlock() {
+    const handGeo = new THREE.BoxGeometry(0.24, 0.24, 0.24);
+    const mat = this.blockMaterials[this.selectedBlockType] || this.blockMaterials.grass;
+    this.handBlock = new THREE.Mesh(handGeo, mat);
+
+    // Position in bottom-right of player screen
+    this.handBlock.position.set(0.36, -0.28, -0.55);
+    this.handBlock.rotation.set(0.2, -0.35, 0.1);
+    this.camera.add(this.handBlock);
+    this.scene.add(this.camera);
+  }
+
+  updateHandBlock() {
+    if (!this.handBlock) return;
+    const mat = this.blockMaterials[this.selectedBlockType] || this.blockMaterials.grass;
+    this.handBlock.material = mat;
+  }
+
+  triggerSwing() {
+    this.isSwinging = true;
+    this.swingProgress = 0;
   }
 
   // --- Terrain Generator ---
@@ -305,15 +345,13 @@ class MinecraftApp {
   generateTerrain() {
     this.clearWorld();
     const size = this.worldSize;
-
-    // Voxel Geometry shared across blocks
     this.cubeGeo = new THREE.BoxGeometry(1, 1, 1);
 
     for (let x = 0; x < size; x++) {
       for (let z = 0; z < size; z++) {
-        // Height formula with sine waves
+        // Natural rolling hills
         const height = Math.floor(
-          3 + Math.sin(x * 0.4) * 1.5 + Math.cos(z * 0.4) * 1.5 + Math.sin((x + z) * 0.3) * 0.8
+          3.5 + Math.sin(x * 0.35) * 1.8 + Math.cos(z * 0.35) * 1.8 + Math.sin((x + z) * 0.25) * 1.0
         );
 
         for (let y = 0; y <= height; y++) {
@@ -329,16 +367,17 @@ class MinecraftApp {
     }
 
     // Add Oak Trees
-    const treeSpots = [
-      { x: 5, z: 5 },
-      { x: 13, z: 12 },
-      { x: 12, z: 4 }
+    const treeCoords = [
+      { x: 5, z: 6 },
+      { x: 14, z: 13 },
+      { x: 15, z: 5 },
+      { x: 6, z: 15 }
     ];
 
-    treeSpots.forEach(t => {
+    treeCoords.forEach(t => {
       const groundY = this.getHighestBlockY(t.x, t.z);
       if (groundY > 0) {
-        // Trunk (height 4)
+        // Trunk
         for (let dy = 1; dy <= 4; dy++) {
           this.setBlock(t.x, groundY + dy, t.z, "wood");
         }
@@ -347,7 +386,7 @@ class MinecraftApp {
           for (let lz = -2; lz <= 2; lz++) {
             for (let ly = 3; ly <= 5; ly++) {
               if (Math.abs(lx) === 2 && Math.abs(lz) === 2 && ly === 5) continue;
-              if (lx === 0 && lz === 0 && ly <= 4) continue; // tree trunk
+              if (lx === 0 && lz === 0 && ly <= 4) continue;
               this.setBlock(t.x + lx, groundY + ly, t.z + lz, "leaves");
             }
           }
@@ -355,9 +394,10 @@ class MinecraftApp {
       }
     });
 
-    // Place Player on safe ground
-    const startY = this.getHighestBlockY(9, 9) + 2;
-    this.player.pos = { x: 9, y: startY, z: 9 };
+    // Place Player safely on top of terrain
+    const startY = this.getHighestBlockY(10, 10) + 2.2;
+    this.player.pos = { x: 10, y: startY, z: 10 };
+    this.player.velocity = { x: 0, y: 0, z: 0 };
   }
 
   clearWorld() {
@@ -398,11 +438,38 @@ class MinecraftApp {
     const key = this.getKey(x, y, z);
     const mesh = this.blocks.get(key);
     if (mesh) {
+      this.spawnBreakParticles(x + 0.5, y + 0.5, z + 0.5, mesh.userData.type);
       this.scene.remove(mesh);
       this.blocks.delete(key);
       return true;
     }
     return false;
+  }
+
+  // --- Block Breaking Particle Explosion ---
+
+  spawnBreakParticles(x, y, z, blockType) {
+    const particleGeo = new THREE.BoxGeometry(0.12, 0.12, 0.12);
+    const mat = this.blockMaterials[blockType] || this.blockMaterials.stone;
+
+    for (let i = 0; i < 8; i++) {
+      const p = new THREE.Mesh(particleGeo, mat);
+      p.position.set(
+        x + (Math.random() - 0.5) * 0.4,
+        y + (Math.random() - 0.5) * 0.4,
+        z + (Math.random() - 0.5) * 0.4
+      );
+      p.userData = {
+        vel: new THREE.Vector3(
+          (Math.random() - 0.5) * 4,
+          Math.random() * 3 + 1,
+          (Math.random() - 0.5) * 4
+        ),
+        life: 0.5
+      };
+      this.scene.add(p);
+      this.particles.push(p);
+    }
   }
 
   // --- Hotbar & Inventory UI ---
@@ -434,32 +501,40 @@ class MinecraftApp {
     slots.forEach(s => {
       s.classList.toggle("selected", s.dataset.type === type);
     });
+    this.updateHandBlock();
     if (window.audioEngine) window.audioEngine.playClick();
   }
 
-  // --- Controls & Pointer Lock ---
+  // --- Controls & Pointer Lock with Fallback ---
 
   setupEvents() {
-    // Start Overlay Click (locks pointer)
+    // Start game on clicking either overlay OR canvas
+    const startGame = () => {
+      this.isGameActive = true;
+      if (this.overlay) this.overlay.style.display = "none";
+      if (this.canvas.requestPointerLock) {
+        this.canvas.requestPointerLock();
+      }
+    };
+
     if (this.overlay) {
-      this.overlay.addEventListener("click", () => {
-        this.canvas.requestPointerLock = this.canvas.requestPointerLock || this.canvas.mozRequestPointerLock;
-        if (this.canvas.requestPointerLock) {
-          this.canvas.requestPointerLock();
-        }
-      });
+      this.overlay.addEventListener("click", startGame);
     }
+    this.canvas.addEventListener("click", () => {
+      if (!this.isGameActive) startGame();
+    });
 
     document.addEventListener("pointerlockchange", () => {
       this.isPointerLocked = (document.pointerLockElement === this.canvas);
-      if (this.overlay) {
-        this.overlay.style.display = this.isPointerLocked ? "none" : "flex";
+      if (!this.isPointerLocked && !this.isGameActive) {
+        if (this.overlay) this.overlay.style.display = "flex";
       }
-      this.isGameActive = this.isPointerLocked;
     });
 
     // Keyboard events
     window.addEventListener("keydown", (e) => {
+      if (!this.isGameActive) return;
+
       this.keys[e.code] = true;
 
       // Hotbar selection numbers 1 - 9
@@ -468,47 +543,109 @@ class MinecraftApp {
         this.selectBlock(this.blockTypes[num - 1].id);
       }
 
-      // Space jump
-      if (e.code === "Space" && this.isGameActive) {
+      // Fly Mode Toggle: 'F'
+      if (e.code === "KeyF") {
+        this.player.isFlying = !this.player.isFlying;
+        this.player.velocity.y = 0;
+        if (window.audioEngine) window.audioEngine.playBeep(this.player.isFlying ? 640 : 320, 0.1);
+      }
+
+      // Jump
+      if (e.code === "Space") {
         e.preventDefault();
-        this.player.velocity.y = this.player.jumpForce;
+        if (this.player.isFlying) {
+          this.player.velocity.y = 6.0;
+        } else if (this.player.isGrounded) {
+          this.player.velocity.y = this.player.jumpForce;
+          if (window.audioEngine) window.audioEngine.playBeep(440, 0.05);
+        }
+      }
+
+      // Descend in flight: Shift
+      if (e.code === "ShiftLeft" || e.code === "ShiftRight") {
+        if (this.player.isFlying) {
+          this.player.velocity.y = -6.0;
+        }
       }
     });
 
     window.addEventListener("keyup", (e) => {
       this.keys[e.code] = false;
+      if (this.player.isFlying && (e.code === "Space" || e.code === "ShiftLeft" || e.code === "ShiftRight")) {
+        this.player.velocity.y = 0;
+      }
     });
 
-    // Mouse Look
-    window.addEventListener("mousemove", (e) => {
-      if (!this.isPointerLocked) return;
-
-      const sens = 0.0025;
-      this.player.yaw -= e.movementX * sens;
-      this.player.pitch -= e.movementY * sens;
-
-      // Clamp pitch to avoid neck snap
-      const maxPitch = Math.PI / 2 - 0.05;
-      this.player.pitch = Math.max(-maxPitch, Math.min(maxPitch, this.player.pitch));
-    });
-
-    // Mouse Clicks (Left = Break, Right = Place)
+    // Mouse Look (Works with Pointer Lock AND Drag-to-look fallback)
     this.canvas.addEventListener("mousedown", (e) => {
-      if (!this.isPointerLocked) return;
+      this.isDraggingLook = true;
+      this.lastMouseX = e.clientX;
+      this.lastMouseY = e.clientY;
 
       if (e.button === 0) {
-        // Mine / Break
+        this.triggerSwing();
         this.mineBlock();
       } else if (e.button === 2) {
-        // Place block
         e.preventDefault();
+        this.triggerSwing();
         this.placeBlock();
       }
     });
 
+    window.addEventListener("mouseup", () => {
+      this.isDraggingLook = false;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!this.isGameActive) return;
+
+      const sens = 0.0028;
+
+      if (this.isPointerLocked) {
+        this.player.yaw -= e.movementX * sens;
+        this.player.pitch -= e.movementY * sens;
+      } else if (this.isDraggingLook) {
+        const dx = e.clientX - this.lastMouseX;
+        const dy = e.clientY - this.lastMouseY;
+        this.lastMouseX = e.clientX;
+        this.lastMouseY = e.clientY;
+
+        this.player.yaw -= dx * sens;
+        this.player.pitch -= dy * sens;
+      }
+
+      const maxPitch = Math.PI / 2 - 0.05;
+      this.player.pitch = Math.max(-maxPitch, Math.min(maxPitch, this.player.pitch));
+    });
+
+    // Scroll wheel switches hotbar blocks
+    this.canvas.addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const currentIdx = this.blockTypes.findIndex(b => b.id === this.selectedBlockType);
+      const nextIdx = e.deltaY > 0
+        ? (currentIdx + 1) % this.blockTypes.length
+        : (currentIdx - 1 + this.blockTypes.length) % this.blockTypes.length;
+      this.selectBlock(this.blockTypes[nextIdx].id);
+    });
+
     this.canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-    // Resize event
+    // Window Menubar options
+    const menuItems = this.container.querySelectorAll(".window-menubar span");
+    menuItems.forEach(item => {
+      item.addEventListener("click", () => {
+        const txt = item.textContent.toLowerCase();
+        if (txt.includes("world") || txt.includes("game")) {
+          this.generateTerrain();
+          if (window.audioEngine) window.audioEngine.playStartupChime();
+        } else if (txt.includes("option")) {
+          this.player.isFlying = !this.player.isFlying;
+          alert(`Fly Mode: ${this.player.isFlying ? "ENABLED (Press Space to fly up, Shift to descend)" : "DISABLED (Walking)"}`);
+        }
+      });
+    });
+
+    // Resize observer
     const resizeObserver = new ResizeObserver(() => {
       const w = this.canvas.clientWidth;
       const h = this.canvas.clientHeight;
@@ -553,7 +690,7 @@ class MinecraftApp {
       const placeY = y + Math.round(normal.y);
       const placeZ = z + Math.round(normal.z);
 
-      // Don't place inside the player's head/body
+      // Prevent placing inside player body
       const px = Math.floor(this.player.pos.x);
       const py = Math.floor(this.player.pos.y);
       const pz = Math.floor(this.player.pos.z);
@@ -578,14 +715,20 @@ class MinecraftApp {
     if (this.keys["KeyA"] || this.keys["ArrowLeft"]) move.x -= 1;
     if (this.keys["KeyD"] || this.keys["ArrowRight"]) move.x += 1;
 
-    // Normalize diagonal movement
+    // Normalize
     const len = Math.hypot(move.x, move.z);
     if (len > 0) {
       move.x /= len;
       move.z /= len;
+
+      // Footstep clicks
+      this.stepAudioTimer += delta;
+      if (this.stepAudioTimer > 0.38 && this.player.isGrounded && !this.player.isFlying) {
+        this.stepAudioTimer = 0;
+        if (window.audioEngine) window.audioEngine.playClick();
+      }
     }
 
-    // Camera forward and right vectors projected onto XZ plane
     const sinYaw = Math.sin(this.player.yaw);
     const cosYaw = Math.cos(this.player.yaw);
 
@@ -594,30 +737,31 @@ class MinecraftApp {
     const rightX = cosYaw;
     const rightZ = -sinYaw;
 
-    const dx = (forwardX * move.z + rightX * move.x) * this.player.speed * delta;
-    const dz = (forwardZ * move.z + rightZ * move.x) * this.player.speed * delta;
+    const moveSpeed = (this.player.isFlying ? 10.0 : this.player.speed) * delta;
+    this.player.pos.x += (forwardX * move.z + rightX * move.x) * moveSpeed;
+    this.player.pos.z += (forwardZ * move.z + rightZ * move.x) * moveSpeed;
 
-    this.player.pos.x += dx;
-    this.player.pos.z += dz;
+    // Gravity / Vertical physics
+    if (!this.player.isFlying) {
+      this.player.velocity.y -= 19.0 * delta;
+      this.player.pos.y += this.player.velocity.y * delta;
 
-    // Gravity
-    this.player.velocity.y -= 18.0 * delta;
-    this.player.pos.y += this.player.velocity.y * delta;
+      const curX = Math.floor(this.player.pos.x);
+      const curZ = Math.floor(this.player.pos.z);
+      const groundY = this.getHighestBlockY(curX, curZ) + 1.8;
 
-    // Floor collision
-    const curX = Math.floor(this.player.pos.x);
-    const curZ = Math.floor(this.player.pos.z);
-    const groundY = this.getHighestBlockY(curX, curZ) + 1.8;
-
-    if (this.player.pos.y < groundY) {
-      this.player.pos.y = groundY;
-      this.player.velocity.y = 0;
-      this.player.isGrounded = true;
+      if (this.player.pos.y < groundY) {
+        this.player.pos.y = groundY;
+        this.player.velocity.y = 0;
+        this.player.isGrounded = true;
+      } else {
+        this.player.isGrounded = false;
+      }
     } else {
-      this.player.isGrounded = false;
+      this.player.pos.y += this.player.velocity.y * delta;
     }
 
-    // World Boundary constraint
+    // World boundary
     this.player.pos.x = Math.max(0.5, Math.min(this.worldSize - 0.5, this.player.pos.x));
     this.player.pos.z = Math.max(0.5, Math.min(this.worldSize - 0.5, this.player.pos.z));
 
@@ -627,7 +771,38 @@ class MinecraftApp {
     const euler = new THREE.Euler(this.player.pitch, this.player.yaw, 0, "YXZ");
     this.camera.quaternion.setFromEuler(euler);
 
-    // Target Block Outline highlight
+    // Hand Block Swing Animation
+    if (this.handBlock) {
+      if (this.isSwinging) {
+        this.swingProgress += delta * 12;
+        const swingAngle = Math.sin(this.swingProgress * Math.PI) * 0.45;
+        this.handBlock.rotation.x = 0.2 + swingAngle;
+        this.handBlock.position.z = -0.55 + swingAngle * 0.15;
+        if (this.swingProgress >= 1) {
+          this.isSwinging = false;
+          this.handBlock.rotation.x = 0.2;
+          this.handBlock.position.z = -0.55;
+        }
+      } else if (len > 0) {
+        // Walking bobbing
+        const bob = Math.sin(Date.now() * 0.008) * 0.015;
+        this.handBlock.position.y = -0.28 + bob;
+      }
+    }
+
+    // Update Break Particles
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i];
+      p.userData.life -= delta;
+      p.userData.vel.y -= 12.0 * delta;
+      p.position.addScaledVector(p.userData.vel, delta);
+      if (p.userData.life <= 0) {
+        this.scene.remove(p);
+        this.particles.splice(i, 1);
+      }
+    }
+
+    // Target block wireframe
     const hit = this.getRaycastIntersection();
     if (hit) {
       this.highlightBox.position.copy(hit.object.position);
@@ -640,7 +815,7 @@ class MinecraftApp {
   animate() {
     requestAnimationFrame(() => this.animate());
 
-    const delta = 0.016; // smooth 60fps delta
+    const delta = 0.016;
     this.updatePlayer(delta);
 
     if (this.renderer && this.scene && this.camera) {
@@ -650,4 +825,3 @@ class MinecraftApp {
 }
 
 window.MinecraftApp = MinecraftApp;
-

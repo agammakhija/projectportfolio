@@ -21,17 +21,18 @@ Built with **Three.js**, **WebGL**, **HTML5 Canvas**, **CSS3**, and the **Web Au
 - **CRT Glass & Scanline Shaders**: Authentic scanlines, subtle vignette, phosphor glow, curvature warp, and toggleable monochrome green/amber CRT modes.
 
 ### 3. 💾 Built-In Retro Applications
-1. **👤 About Me**: Developer bio, career summary, technical skill bars, and live statistics.
-2. **🚀 Projects Explorer**: Filterable project gallery with live demos, GitHub links, and architectural notes.
-3. **📄 Resume (WordPad)**: Printable work experience, career milestones, and educational background.
-4. **💻 Agam-DOS Terminal**: Real interactive command prompt with the 5-point directory system (`agam resume`, `agam contacts`, `agam education`, `agam about`, `agam skills`) with one-click direct file downloads, matrix digital rain, theme switcher, and ASCII neofetch specs.
-5. **🎵 Winamp Media Player**: Retro audio player with green LCD marquee, animated 16-band audio spectrum visualizer, and real-time synthesized chiptune & synthwave tracks!
-6. **💣 Minesweeper**: Fully playable 9x9 retro game with 7-segment digital displays and smiley face reactions.
-7. **⛏️ Craft98 — Minecraft Alpha 3D**: Fully playable 3D voxel sandbox! Explore procedural rolling voxel terrain, chop oak trees, mine blocks (left-click), build structures (right-click), switch blocks with hotbar numbers 1-9, walk with WASD, and jump with Space!
-8. **🎨 MS Paint**: Interactive canvas drawing app with a 16-color retro palette, brush sizes, and PNG export.
-9. **✉️ Contact Me (Outlook Express)**: Email composition window with direct links to GitHub, LinkedIn, and X/Twitter.
-10. **⚙️ Display Settings**: Switch between RGB full-color, green phosphor, and amber monochrome modes; change desktop wallpapers; toggle CRT scanlines.
-11. **🗑️ Recycle Bin**: Easter eggs, jokes, and funny developer relics.
+1. **👤 About Me**: Developer bio, academic background, Python 3 and AI Prompt Engineering skill bars, and live statistics.
+2. **🕷️ Portfolio (Internet Explorer)**: Live embedded Spider-Man interactive portfolio (`https://portfolio-swart-pi-47.vercel.app/`) running directly inside the retro CRT monitor with address bar, reload, and new tab controls.
+3. **🐍 Skills Matrix**: Dedicated technical mastery showcase strictly focused on Python 3 Programming and AI Prompt Engineering (System Prompts, CoT Reasoning, Few-Shot, Schema Enforcement).
+4. **🎓 Academic Education**: Complete academic credentials highlighting Newton School of Technology (2026–2030, Ongoing B.Tech CSE AI/ML) and Prodigy Public School (2024–2026).
+5. **💻 Agam-DOS Terminal**: Real interactive command prompt powered by the `agam` executable. Features a complete manual (`agam man`), required `agam` prefix command handling, the 5-point directory system (`agam skills`, `agam education`, `agam portfolio`, `agam contacts`, `agam about`), one-click file downloads, matrix digital rain, and custom themes.
+6. **🎵 Winamp Media Player**: Retro audio player with green LCD marquee, animated 16-band audio spectrum visualizer, and real-time synthesized chiptune & synthwave tracks!
+7. **💣 Minesweeper**: Fully playable 9x9 retro game with 7-segment digital displays and smiley face reactions.
+8. **⛏️ Craft98 — Minecraft Alpha 3D**: Enhanced 3D voxel sandbox! Explore procedural rolling voxel terrain, chop oak trees, mine blocks with debris particle physics, place structures, switch blocks with hotbar 1-9 or scroll wheel, see your 3D in-hand held block with swing animations, walk with WASD, jump with Space, and press `F` for Creative Flight mode!
+9. **🎨 MS Paint**: Interactive canvas drawing app with a 16-color retro palette, brush sizes, and PNG export.
+10. **✉️ Contact Me (Outlook Express)**: Email composition window with direct links to GitHub, LinkedIn, and X/Twitter.
+11. **⚙️ Display Settings**: Switch between RGB full-color, green phosphor, and amber monochrome modes; change desktop wallpapers; toggle CRT scanlines.
+12. **🗑️ Recycle Bin**: Easter eggs, jokes, and funny developer relics.
 
 ### 4. 🔊 Web Audio API Synthesizer (Zero External Audio Dependencies)
 - Algorithmic chiptune and synthwave music generation (kick, snare, bassline, arpeggiated lead).
@@ -59,15 +60,14 @@ Simply double-click or open `index.html` in Chrome, Safari, Firefox, or Edge.
 
 ## 🛠️ Customization Guide
 
-All personal information, projects, skills, and links are neatly consolidated in **`js/data.js`**.
+All personal information, skills, education, and links are neatly consolidated in **`js/data.js`**.
 
 To customize for your own profile:
 1. Open `js/data.js`.
 2. Edit:
-   - `profile.name`, `title`, `tagline`, `bio`, `email`, `github`, `linkedin`, `twitter`.
-   - `skills` to match your core technologies.
-   - `projects` with your own project titles, summaries, tags, and URLs.
-   - `experience` and `education` with your career timeline.
+   - `profile.name`, `title`, `tagline`, `bio`, `email`, `github`, `linkedin`, `spidermanPortfolioUrl`.
+   - `skills` strictly covering your core technologies (Python 3 & AI Prompt Engineering).
+   - `education` with your academic credentials.
 3. Refresh your browser — every window, terminal command, and document across AgamOS updates automatically!
 
 ---

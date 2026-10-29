@@ -16,8 +16,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 2. Populate Apps with Dynamic Data
   populateAboutApp();
-  populateProjectsApp();
-  populateResumeApp();
+  populateSkillsApp();
+  populateEducationApp();
+  setupPortfolioBrowser();
   populateContactApp();
   populateRecycleBin();
 
@@ -87,97 +88,110 @@ function populateAboutApp() {
   }
 }
 
-function populateProjectsApp() {
-  const projects = window.PORTFOLIO_DATA.projects;
-  const container = document.getElementById("projects-grid");
-  const filterBtns = document.querySelectorAll(".project-filter-btn");
+function populateSkillsApp() {
+  const skills = window.PORTFOLIO_DATA.skills;
+  const container = document.getElementById("skills-page-content");
+  if (!container) return;
 
-  const renderProjects = (filter = "all") => {
-    if (!container) return;
-    const filtered = filter === "all"
-      ? projects
-      : projects.filter(p => p.category.toLowerCase().includes(filter.toLowerCase()));
+  let html = `
+    <div class="skills-header-banner">
+      <div class="skills-banner-icon">🐍</div>
+      <div>
+        <h3>Agam Makhija — Technical Skills & Competencies</h3>
+        <p>Specializing exclusively in <b>Python 3 programming</b> and <b>AI Prompt Engineering</b>.</p>
+      </div>
+    </div>
+  `;
 
-    container.innerHTML = filtered.map(p => `
-      <div class="project-card" style="border-top: 3px solid ${p.accent}">
-        <div class="project-card-header">
-          <div class="project-title-row">
-            <h3>${p.title}</h3>
-            <span class="project-tag" style="background:${p.accent}22; color:${p.accent}">${p.tag}</span>
-          </div>
-          <span class="project-period">${p.period}</span>
-        </div>
-        <p class="project-desc">${p.description}</p>
-        <div class="project-metrics">
-          <span class="metric-icon">⚡</span> ${p.metrics}
-        </div>
-        <div class="project-tech-tags">
-          ${p.tech.map(t => `<span class="tech-pill">${t}</span>`).join("")}
-        </div>
-        <div class="project-card-actions">
-          <a href="${p.githubUrl}" target="_blank" rel="noopener noreferrer" class="retro-btn btn-sm">
-            <span>🐙 GitHub</span>
-          </a>
-          <a href="${p.demoUrl}" target="_blank" rel="noopener noreferrer" class="retro-btn btn-sm btn-primary">
-            <span>🚀 Live Demo</span>
-          </a>
+  Object.keys(skills).forEach(category => {
+    html += `
+      <div class="skill-card-box">
+        <h4>${category}</h4>
+        <div class="skill-bars">
+          ${skills[category].map(item => `
+            <div class="skill-row" style="margin-bottom: 8px;">
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                  <span class="skill-name" style="width: auto; font-weight: 700; color: #1e293b;">${item.name}</span>
+                  <span class="skill-pct">${item.level}%</span>
+                </div>
+                <div class="skill-bar-track">
+                  <div class="skill-bar-fill" style="width: ${item.level}%"></div>
+                </div>
+                <div class="skill-desc-text">${item.desc}</div>
+              </div>
+            </div>
+          `).join("")}
         </div>
       </div>
-    `).join("");
-  };
-
-  renderProjects("all");
-
-  filterBtns.forEach(btn => {
-    btn.addEventListener("click", () => {
-      filterBtns.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const category = btn.dataset.filter;
-      renderProjects(category);
-      if (window.audioEngine) window.audioEngine.playClick();
-    });
+    `;
   });
+
+  html += `
+    <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+      <button class="retro-btn btn-sm" onclick="if (window.terminalApp) window.terminalApp.downloadFile('skills');">
+        💾 Download Skills Matrix (.txt)
+      </button>
+    </div>
+  `;
+
+  container.innerHTML = html;
 }
 
-function populateResumeApp() {
-  const exp = window.PORTFOLIO_DATA.experience;
+function populateEducationApp() {
   const edu = window.PORTFOLIO_DATA.education;
-  const expContainer = document.getElementById("resume-experience");
-  const eduContainer = document.getElementById("resume-education");
+  const container = document.getElementById("education-page-content");
+  if (!container) return;
 
-  if (expContainer) {
-    expContainer.innerHTML = exp.map(e => `
-      <div class="resume-item">
-        <div class="resume-item-header">
-          <h4>${e.role}</h4>
-          <span class="resume-dates">${e.period}</span>
-        </div>
-        <div class="resume-company">${e.company} • <i>${e.location}</i></div>
-        <ul class="resume-bullets">
-          ${e.bullets.map(b => `<li>${b}</li>`).join("")}
-        </ul>
+  let html = `
+    <div class="education-header-banner">
+      <div class="education-banner-icon">🎓</div>
+      <div>
+        <h3>Agam Makhija — Academic Education & Chronicles</h3>
+        <p>Newton School of Technology (2026–2030) &bull; Prodigy Public School (2024–2026)</p>
       </div>
-    `).join("");
+    </div>
+  `;
+
+  if (edu) {
+    edu.forEach(ed => {
+      const isCurrent = ed.status && ed.status.toLowerCase().includes("ongoing");
+      html += `
+        <div class="edu-card ${isCurrent ? 'current' : ''}">
+          <div class="edu-card-top">
+            <h4>${ed.degree}</h4>
+            <span class="edu-card-badge">${ed.period}</span>
+          </div>
+          <div class="edu-inst">${ed.institution} ${ed.status ? `• <i>${ed.status}</i>` : ""}</div>
+          <div class="edu-details">${ed.details}</div>
+          ${ed.highlights ? `
+            <ul class="edu-bullets-list">
+              ${ed.highlights.map(h => `<li>${h}</li>`).join("")}
+            </ul>
+          ` : ""}
+        </div>
+      `;
+    });
   }
 
-  if (eduContainer) {
-    eduContainer.innerHTML = edu.map(ed => `
-      <div class="resume-item">
-        <div class="resume-item-header">
-          <h4>${ed.degree}</h4>
-          <span class="resume-dates">${ed.period}</span>
-        </div>
-        <div class="resume-company">${ed.institution}</div>
-        <p class="resume-details">${ed.details}</p>
-      </div>
-    `).join("");
-  }
+  html += `
+    <div style="display: flex; justify-content: flex-end; margin-top: 8px;">
+      <button class="retro-btn btn-sm" onclick="if (window.terminalApp) window.terminalApp.downloadFile('education');">
+        🎓 Download Education Record (.txt)
+      </button>
+    </div>
+  `;
 
-  // Print button
-  const printBtn = document.getElementById("resume-btn-print");
-  if (printBtn) {
-    printBtn.addEventListener("click", () => {
-      window.print();
+  container.innerHTML = html;
+}
+
+function setupPortfolioBrowser() {
+  const reloadBtn = document.getElementById("portfolio-browser-reload");
+  const iframe = document.getElementById("portfolio-iframe");
+  if (reloadBtn && iframe) {
+    reloadBtn.addEventListener("click", () => {
+      iframe.src = window.PORTFOLIO_DATA.profile.spidermanPortfolioUrl || "https://portfolio-swart-pi-47.vercel.app/";
+      if (window.audioEngine) window.audioEngine.playClick();
     });
   }
 }

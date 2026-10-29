@@ -4,8 +4,8 @@
   "description": "Interactive 3D Retro Workstation and CRT Operating System Portfolio inspired by Henry Heffernan",
   "main": "index.html",
   "scripts": {
-    "start": "python3 -m http.server 3000",
-    "serve": "python3 -m http.server 3000"
+    "start": "python3 server.py",
+    "serve": "python3 server.py"
   },
   "keywords": [
     "portfolio",
@@ -17,6 +17,6 @@
     "interactive"
   ],
   "author": "Agam Makhija <agam.makhija07@gmail.com>",
-  "license": "MIT"
+  "private": true
 }
 

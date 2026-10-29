@@ -59,13 +59,17 @@
               <span class="icon-img">👤</span>
               <span class="icon-label">About Me</span>
             </div>
-            <div class="desktop-icon" data-app="projects">
-              <span class="icon-img">🚀</span>
-              <span class="icon-label">Projects</span>
+            <div class="desktop-icon" data-app="portfolio">
+              <span class="icon-img">🕷️</span>
+              <span class="icon-label">Portfolio</span>
             </div>
-            <div class="desktop-icon" data-app="resume">
-              <span class="icon-img">📄</span>
-              <span class="icon-label">Resume</span>
+            <div class="desktop-icon" data-app="skills">
+              <span class="icon-img">🐍</span>
+              <span class="icon-label">Skills</span>
+            </div>
+            <div class="desktop-icon" data-app="education">
+              <span class="icon-img">🎓</span>
+              <span class="icon-label">Education</span>
             </div>
             <div class="desktop-icon" data-app="terminal">
               <span class="icon-img">💻</span>
@@ -126,8 +130,8 @@
                   <div class="about-avatar">👨‍💻</div>
                   <div class="about-title-block">
                     <h2 id="about-name">Agam Makhija</h2>
-                    <div id="about-title" class="about-subtitle">Software Engineer & Creative Developer</div>
-                    <div id="about-tagline" class="about-tagline">Crafting immersive digital experiences & intelligent platforms.</div>
+                    <div id="about-title" class="about-subtitle">AI & Python Developer | Prompt Engineering Specialist</div>
+                    <div id="about-tagline" class="about-tagline">Python Scripting • Advanced Prompt Engineering • Machine Learning</div>
                   </div>
                 </div>
 
@@ -147,12 +151,12 @@
             </div>
           </div>
 
-          <!-- Application Window 2: Projects Explorer -->
-          <div id="win-projects" class="window hidden" data-title="Projects Explorer" data-icon="🚀" style="width: 740px; height: 480px;">
+          <!-- Application Window 2: Spider-Man Portfolio Browser -->
+          <div id="win-portfolio" class="window hidden" data-title="Agam Makhija Portfolio — Internet Explorer" data-icon="🕷️" style="width: 820px; height: 530px;">
             <div class="window-titlebar">
               <div class="window-title-left">
-                <span class="window-icon">🚀</span>
-                <span class="window-title-text">Projects Explorer — C:\PORTFOLIO\PROJECTS</span>
+                <span class="window-icon">🕷️</span>
+                <span class="window-title-text">Agam Makhija — Spider-Man Portfolio (Internet Explorer)</span>
               </div>
               <div class="window-controls">
                 <button class="win-btn win-btn-min">_</button>
@@ -164,34 +168,33 @@
               <span><u>F</u>ile</span>
               <span><u>E</u>dit</span>
               <span><u>V</u>iew</span>
-              <span><u>T</u>ools</span>
+              <span><u>G</u>o</span>
+              <span><u>F</u>avorites</span>
               <span><u>H</u>elp</span>
             </div>
-            <div class="window-content">
-              <div class="projects-container">
-                <div class="projects-toolbar">
-                  <span style="font-size: 11px; font-weight: bold; margin-right: 4px;">Filter:</span>
-                  <button class="project-filter-btn active" data-filter="all">All Projects</button>
-                  <button class="project-filter-btn" data-filter="full-stack">Full-Stack</button>
-                  <button class="project-filter-btn" data-filter="3d">3D & WebGL</button>
-                  <button class="project-filter-btn" data-filter="systems">Systems</button>
-                  <button class="project-filter-btn" data-filter="creative">Creative / Audio</button>
-                </div>
-                <div id="projects-grid" class="projects-grid"></div>
+            <div class="browser-toolbar">
+              <button class="retro-btn btn-sm" id="portfolio-browser-reload" title="Reload Portfolio">🔄 Reload</button>
+              <div class="browser-address-box">
+                <span style="font-size: 11px; font-weight: bold; color: #1e293b;"><u>A</u>ddress:</span>
+                <input type="text" class="browser-url-input" value="https://portfolio-swart-pi-47.vercel.app/" readonly>
               </div>
+              <a href="https://portfolio-swart-pi-47.vercel.app/" target="_blank" rel="noopener noreferrer" class="retro-btn btn-sm" style="text-decoration:none; color:inherit; font-weight:bold;" title="Open in external browser window">🌐 Pop Out</a>
+            </div>
+            <div class="window-content browser-content-pane">
+              <iframe id="portfolio-iframe" src="https://portfolio-swart-pi-47.vercel.app/" title="Agam Makhija Spider-Man Portfolio" allow="fullscreen; accelerometer; gyroscope"></iframe>
             </div>
             <div class="window-statusbar">
-              <span>6 Objects</span>
-              <span>All Systems Go</span>
+              <span>Done &bull; Internet Zone</span>
+              <span>https://portfolio-swart-pi-47.vercel.app/</span>
             </div>
           </div>
 
-          <!-- Application Window 3: Resume -->
-          <div id="win-resume" class="window hidden" data-title="Resume — Agam Makhija.doc" data-icon="📄" style="width: 660px; height: 500px;">
+          <!-- Application Window 3: Skills Matrix -->
+          <div id="win-skills" class="window hidden" data-title="Skills Matrix — Python 3 & AI Prompts" data-icon="🐍" style="width: 660px; height: 480px;">
             <div class="window-titlebar">
               <div class="window-title-left">
-                <span class="window-icon">📄</span>
-                <span class="window-title-text">WordPad — Resume_Agam_Makhija.doc</span>
+                <span class="window-icon">🐍</span>
+                <span class="window-title-text">Skills Matrix — Python 3 & AI Prompt Engineering</span>
               </div>
               <div class="window-controls">
                 <button class="win-btn win-btn-min">_</button>
@@ -201,34 +204,48 @@
             </div>
             <div class="window-menubar">
               <span><u>F</u>ile</span>
-              <span><u>E</u>dit</span>
-              <span><u>F</u>ormat</span>
-              <span><u>P</u>rint</span>
+              <span><u>V</u>iew</span>
+              <span><u>S</u>pecifications</span>
+              <span><u>H</u>elp</span>
             </div>
             <div class="window-content">
-              <div class="resume-container">
-                <div class="resume-header">
-                  <div class="resume-header-info">
-                    <h2>Agam Makhija</h2>
-                    <p>Software Engineer | Creative Developer | agam.makhija07@gmail.com</p>
-                  </div>
-                  <button id="resume-btn-print" class="retro-btn btn-sm">🖨️ Print / Save PDF</button>
-                </div>
-
-                <div class="resume-section">
-                  <h3 class="resume-section-title">Professional Experience</h3>
-                  <div id="resume-experience"></div>
-                </div>
-
-                <div class="resume-section">
-                  <h3 class="resume-section-title">Education</h3>
-                  <div id="resume-education"></div>
-                </div>
+              <div id="skills-page-content" class="skills-page-container">
+                <!-- Dynamically populated by populateSkillsApp() -->
               </div>
             </div>
             <div class="window-statusbar">
-              <span>For Help, press F1</span>
-              <span>Document Mode: WordPad 98</span>
+              <span>Core Language: Python 3 &bull; AI Prompt Engineering</span>
+              <span>Verified Competency</span>
+            </div>
+          </div>
+
+          <!-- Application Window 4: Education Chronicles -->
+          <div id="win-education" class="window hidden" data-title="Education — Academic Chronicles" data-icon="🎓" style="width: 660px; height: 490px;">
+            <div class="window-titlebar">
+              <div class="window-title-left">
+                <span class="window-icon">🎓</span>
+                <span class="window-title-text">Academic Chronicles & Education — Agam Makhija</span>
+              </div>
+              <div class="window-controls">
+                <button class="win-btn win-btn-min">_</button>
+                <button class="win-btn win-btn-max">□</button>
+                <button class="win-btn win-btn-close">✕</button>
+              </div>
+            </div>
+            <div class="window-menubar">
+              <span><u>F</u>ile</span>
+              <span><u>V</u>iew</span>
+              <span><u>R</u>ecords</span>
+              <span><u>H</u>elp</span>
+            </div>
+            <div class="window-content">
+              <div id="education-page-content" class="education-page-container">
+                <!-- Dynamically populated by populateEducationApp() -->
+              </div>
+            </div>
+            <div class="window-statusbar">
+              <span>Newton School of Technology &bull; Prodigy Public School</span>
+              <span>Verified Records</span>
             </div>
           </div>
 
@@ -524,11 +541,12 @@
                   <div class="mc-title">⛏️ CRAFT98 // MINECRAFT 3D</div>
                   <div class="mc-instructions">
                     <b>Controls:</b><br>
-                    <span>WASD / Arrow Keys</span> to Walk &bull; <span>Space</span> to Jump<br>
-                    <span>Left Click</span>: Mine / Break Block<br>
+                    <span>WASD / Arrow Keys</span> to Walk &bull; <span>Space</span> to Jump &bull; <span>F</span> for Flight Mode<br>
+                    <span>Mouse Move or Drag</span> to Look Around<br>
+                    <span>Left Click</span>: Mine / Break Block (with Debris Particles)<br>
                     <span>Right Click</span>: Place Selected Block<br>
-                    <span>Keys 1-9</span> or Hotbar to Select Block<br>
-                    <span>ESC</span> to Release Mouse Cursor
+                    <span>Keys 1-9</span> or Scroll Wheel to Switch Held Block<br>
+                    <span>World &gt; New World</span> in Menu to Generate New Seed
                   </div>
                   <div class="mc-click-prompt">CLICK TO PLAY IN FULL 3D</div>
                 </div>
@@ -567,13 +585,17 @@
               <span class="start-item-icon">👤</span>
               <span>About Agam</span>
             </div>
-            <div class="start-item" data-app="projects">
-              <span class="start-item-icon">🚀</span>
-              <span>Projects</span>
+            <div class="start-item" data-app="portfolio">
+              <span class="start-item-icon">🕷️</span>
+              <span>Spider-Man Portfolio</span>
             </div>
-            <div class="start-item" data-app="resume">
-              <span class="start-item-icon">📄</span>
-              <span>Resume & Experience</span>
+            <div class="start-item" data-app="skills">
+              <span class="start-item-icon">🐍</span>
+              <span>Skills Matrix (Python 3 & AI)</span>
+            </div>
+            <div class="start-item" data-app="education">
+              <span class="start-item-icon">🎓</span>
+              <span>Academic Education</span>
             </div>
             <div class="start-item" data-app="terminal">
               <span class="start-item-icon">💻</span>
