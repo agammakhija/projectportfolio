@@ -85,7 +85,19 @@ To customize for your own profile:
 
 ---
 
-## 📜 Credits & Inspiration
-- Inspired by [Henry Heffernan's portfolio](https://henryheffernan.com) and the iconic aesthetic of 90s computing.
-- Designed & Developed by [Agam Makhija](https://github.com/agammakhija).
+## 📜 Credits, Attribution & Legal Disclaimers
+
+### Original Design & Inspiration
+- **Original Concept & Work**: Created by [Henry Heffernan](https://henryheffernan.com) ([@henryjeff](https://github.com/henryjeff)).
+- **Original Open-Source Repository**: [henryjeff/portfolio-website](https://github.com/henryjeff/portfolio-website) (Licensed under the MIT License).
+- **Adapted & Enhanced by**: [Agam Makhija](https://github.com/agammakhija) (Specialized in Python 3 programming, AI Prompt Engineering, and custom 3D web features).
+
+### Open-Source Licenses
+- **Portfolio Codebase**: Licensed under the [MIT License](LICENSE) &copy; 2021–2026 Henry Heffernan.
+- **Three.js Engine**: Licensed under the [MIT License](https://github.com/mrdoob/three.js/blob/dev/LICENSE) &copy; 2010–2026 Three.js Authors.
+- For complete legal notices, third-party library attributions, and fair use disclosures, please refer to [ATTRIBUTION.md](ATTRIBUTION.md).
+
+### Fair Use & Non-Commercial Notice
+All pop-culture homages (including Spider-Man themes, Minecraft voxel sandbox tribute, and classic retro Windows 98 operating system aesthetics) are included solely for non-commercial educational demonstration and personal portfolio presentation. All respective trademarks and copyrights remain the property of their rightful owners.
+
 

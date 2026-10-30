@@ -1,6 +1,9 @@
 /**
  * AgamOS & 3D Retro Workstation Entry Point
  * Orchestrates Boot Sequence, View Switching, App Populating, and Event Handlers
+ * 
+ * Inspired by and adapted from Henry Heffernan's 3D portfolio (https://github.com/henryjeff/portfolio-website)
+ * Licensed under the MIT License (see LICENSE and ATTRIBUTION.md).
  */
 
 document.addEventListener("DOMContentLoaded", () => {

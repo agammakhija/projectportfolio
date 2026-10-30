@@ -1,6 +1,9 @@
 /**
  * 3D Scene Controller for Agam's Retro Room & CRT Workstation
  * Built with Three.js - Procedural 3D models with zero external asset dependencies!
+ * 
+ * Inspired by and adapted from Henry Heffernan's 3D portfolio (https://github.com/henryjeff/portfolio-website)
+ * Licensed under the MIT License (see LICENSE and ATTRIBUTION.md).
  */
 
 class RetroScene {

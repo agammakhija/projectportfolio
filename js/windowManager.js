@@ -2,6 +2,9 @@
  * AgamOS Window Manager
  * Handles authentic retro Windows 95/98 window behaviors:
  * dragging, z-index focus, minimize/restore, maximize, taskbar synchronization.
+ * 
+ * Inspired by and adapted from Henry Heffernan's desktop architecture (https://github.com/henryjeff/portfolio-website)
+ * Licensed under the MIT License (see LICENSE and ATTRIBUTION.md).
  */
 
 class WindowManager {

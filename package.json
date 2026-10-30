@@ -1,7 +1,7 @@
 {
   "name": "agam-portfolio-3d-retro",
   "version": "1.0.0",
-  "description": "Interactive 3D Retro Workstation and CRT Operating System Portfolio inspired by Henry Heffernan",
+  "description": "Interactive 3D Retro Workstation and CRT Operating System Portfolio inspired by Henry Heffernan (https://github.com/henryjeff/portfolio-website)",
   "main": "index.html",
   "scripts": {
     "start": "python3 server.py",
@@ -17,6 +17,17 @@
     "interactive"
   ],
   "author": "Agam Makhija <agam.makhija07@gmail.com>",
-  "private": true
+  "contributors": [
+    {
+      "name": "Henry Heffernan",
+      "url": "https://henryheffernan.com",
+      "role": "Original 3D Workstation Portfolio Concept & Design (https://github.com/henryjeff/portfolio-website)"
+    },
+    {
+      "name": "Agam Makhija",
+      "url": "https://portfolio-swart-pi-47.vercel.app",
+      "role": "Customizations, Python/AI Prompt focus, Resident Evil inspection, Spider-Man themes, and AgamOS implementation"
+    }
+  ],
+  "license": "MIT"
 }
-
