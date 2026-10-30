@@ -825,6 +825,7 @@ class RetroScene {
     kbBody.position.set(0, 1.008, 0.54);
     kbBody.rotation.x = 0.02;
     kbBody.castShadow = true;
+    kbBody.name = "deskSurface";
     periGroup.add(kbBody);
 
     // Chiclet Keycaps Tray (Crisp White Apple Keys)
@@ -834,6 +835,7 @@ class RetroScene {
     );
     keysTray.position.set(0, 1.018, 0.54);
     keysTray.rotation.x = 0.02;
+    keysTray.name = "deskSurface";
     periGroup.add(keysTray);
 
     // 2. Apple Magic Mouse (Glossy white continuous surface, wireless)
@@ -843,7 +845,7 @@ class RetroScene {
     );
     mouseBody.position.set(0.52, 1.012, 0.54);
     mouseBody.castShadow = true;
-    mouseBody.name = "deskMouse";
+    mouseBody.name = "deskSurface";
     periGroup.add(mouseBody);
 
     // 3. Apple HomePod Mini Speakers (Space Gray Spheres)
@@ -866,7 +868,7 @@ class RetroScene {
     });
 
     this.scene.add(periGroup);
-    this.interactiveObjects.push(mouseBody);
+    this.interactiveObjects.push(kbBody, keysTray, mouseBody);
   }
 
   // --- High-End Articulated Architect Desk Lamp ---
@@ -1316,17 +1318,23 @@ class RetroScene {
       }
       const name = hit ? hit.name : "";
 
-      if (name === "crtScreen" || name === "crtMonitor" || name === "stickyNote") {
-        this.setLamp(true); // Clicking onto the computer desktop turns lamp on
+      if (name === "deskLamp" || name === "lampSwitch" || name === "lampShade" || name === "lampBulb") {
+        this.toggleLamp(); // Click anywhere on the lamp to toggle it on/off
+      } else if (
+        name === "crtScreen" ||
+        name === "crtMonitor" ||
+        name === "stickyNote" ||
+        name === "deskSurface" ||
+        name === "deskTop" ||
+        name === "deskMouse"
+      ) {
+        // Clicking anywhere onto the desktop (Mac screen, desk surface, keyboard, mouse) lands in the OS!
+        this.setLamp(true);
         if (this.cameraMode === "desk") {
           this.isStickyNoteHovered = false;
           this.showInspectOverlay(false);
           window.dispatchEvent(new CustomEvent("enterAgamOS"));
         }
-      } else if (name === "deskLamp" || name === "lampSwitch" || name === "lampShade" || name === "lampBulb") {
-        this.toggleLamp(); // Click anywhere on the lamp to toggle it on/off
-      } else if (name === "deskSurface" || name === "deskTop") {
-        this.setLamp(true); // Click onto the desktop to turn it on
       } else if (name === "coffeeMug") {
         if (window.audioEngine) window.audioEngine.playBeep(520, 0.08);
       } else if (name === "floppyDisk") {
