@@ -27,6 +27,9 @@ class TerminalApp {
     this.printWelcome();
 
     this.inputEl.addEventListener("keydown", (e) => {
+      // Prevent other global shortcuts/games from intercepting terminal input
+      e.stopPropagation();
+
       if (e.key === "Enter") {
         const cmd = this.inputEl.value.trim();
         this.inputEl.value = "";
@@ -50,6 +53,14 @@ class TerminalApp {
         e.preventDefault();
         this.autocomplete();
       }
+    });
+
+    this.inputEl.addEventListener("keyup", (e) => {
+      e.stopPropagation();
+    });
+
+    this.inputEl.addEventListener("keypress", (e) => {
+      e.stopPropagation();
     });
 
     // Auto-focus input when clicking terminal window

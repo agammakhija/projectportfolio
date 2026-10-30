@@ -505,6 +505,19 @@ class MinecraftApp {
     if (window.audioEngine) window.audioEngine.playClick();
   }
 
+  // --- Pause & State Management ---
+
+  pause() {
+    this.isGameActive = false;
+    this.isPointerLocked = false;
+    this.isDraggingLook = false;
+    this.keys = {};
+    if (this.overlay) this.overlay.style.display = "flex";
+    if (document.pointerLockElement === this.canvas && document.exitPointerLock) {
+      try { document.exitPointerLock(); } catch (_) {}
+    }
+  }
+
   // --- Controls & Pointer Lock with Fallback ---
 
   setupEvents() {
@@ -526,13 +539,30 @@ class MinecraftApp {
 
     document.addEventListener("pointerlockchange", () => {
       this.isPointerLocked = (document.pointerLockElement === this.canvas);
-      if (!this.isPointerLocked && !this.isGameActive) {
+      if (!this.isPointerLocked) {
+        this.isGameActive = false;
+        this.keys = {};
         if (this.overlay) this.overlay.style.display = "flex";
       }
     });
 
     // Keyboard events
     window.addEventListener("keydown", (e) => {
+      // 1. NEVER intercept typing in inputs, textareas or other controls (e.g. terminal)
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)) {
+        return;
+      }
+
+      // 2. Check if Minecraft window is visible and active
+      if (!this.container || this.container.classList.contains("hidden")) {
+        this.isGameActive = false;
+        return;
+      }
+      if (window.windowManager && window.windowManager.activeWindow && window.windowManager.activeWindow !== "minecraft") {
+        this.isGameActive = false;
+        return;
+      }
+
       if (!this.isGameActive) return;
 
       this.keys[e.code] = true;
@@ -570,6 +600,9 @@ class MinecraftApp {
     });
 
     window.addEventListener("keyup", (e) => {
+      if (e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable)) {
+        return;
+      }
       this.keys[e.code] = false;
       if (this.player.isFlying && (e.code === "Space" || e.code === "ShiftLeft" || e.code === "ShiftRight")) {
         this.player.velocity.y = 0;

@@ -357,10 +357,17 @@ class WindowManager {
 
   setupKeyboardShortcuts() {
     document.addEventListener("keydown", (e) => {
+      const isInput = e.target && (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA" || e.target.isContentEditable);
+
       // Cmd+Space or Ctrl+Space toggles Spotlight
       if ((e.metaKey || e.ctrlKey) && e.code === "Space") {
         e.preventDefault();
         this.toggleSpotlight();
+        return;
+      }
+
+      // If user is typing normal text into an input or terminal, never intercept
+      if (isInput && e.key !== "Escape") {
         return;
       }
 
@@ -514,6 +521,16 @@ class WindowManager {
     const winObj = this.windows.get(appId);
     if (!winObj || !winObj.isOpen) return;
 
+    // Pause Minecraft whenever focusing away from it
+    if (appId !== "minecraft" && window.minecraftApp && typeof window.minecraftApp.pause === "function") {
+      window.minecraftApp.pause();
+    }
+
+    // Auto-focus terminal input when terminal is focused
+    if (appId === "terminal" && window.terminalApp && window.terminalApp.inputEl) {
+      setTimeout(() => window.terminalApp.inputEl.focus(), 60);
+    }
+
     this.topZ += 2;
     winObj.el.style.zIndex = this.topZ;
 
@@ -538,6 +555,10 @@ class WindowManager {
   minimizeWindow(appId) {
     const winObj = this.windows.get(appId);
     if (!winObj || !winObj.isOpen) return;
+
+    if (appId === "minecraft" && window.minecraftApp && typeof window.minecraftApp.pause === "function") {
+      window.minecraftApp.pause();
+    }
 
     winObj.isMinimized = true;
     winObj.el.classList.add("minimized");
@@ -617,6 +638,10 @@ class WindowManager {
   closeWindow(appId) {
     const winObj = this.windows.get(appId);
     if (!winObj || !winObj.isOpen) return;
+
+    if (appId === "minecraft" && window.minecraftApp && typeof window.minecraftApp.pause === "function") {
+      window.minecraftApp.pause();
+    }
 
     winObj.isOpen = false;
     winObj.isMinimized = false;
