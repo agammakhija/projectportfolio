@@ -1141,22 +1141,13 @@ class RetroScene {
     lampGroup.add(shadeGroup);
     this.scene.add(lampGroup);
 
-    // Register all interactive meshes for raycast clicks
-    this.interactiveObjects.push(
-      baseBottom,
-      baseTop,
-      turret,
-      switchBase,
-      switchLever,
-      elbowCenter,
-      thumbKnob,
-      thumbWing,
-      wrist,
-      shadeCrown,
-      shadeOuter,
-      shadeRim,
-      this.lampBulb
-    );
+    // Register every single mesh in the lamp hierarchy so clicking anywhere on the lamp toggles it
+    lampGroup.traverse((child) => {
+      if (child.isMesh) {
+        child.name = "deskLamp";
+        this.interactiveObjects.push(child);
+      }
+    });
   }
 
   // --- Desk Props (Coffee Mug, Floppy Disks) ---
@@ -1209,10 +1200,10 @@ class RetroScene {
     if (this.isLampOn === isOn) return this.isLampOn;
     this.isLampOn = isOn;
     if (this.lampLight) {
-      this.lampLight.intensity = this.isLampOn ? 2.2 : 0;
+      this.lampLight.intensity = this.isLampOn ? 2.6 : 0;
     }
     if (this.lampBulb) {
-      this.lampBulb.material.color.setHex(this.isLampOn ? 0xfff4d6 : 0x444444);
+      this.lampBulb.material.color.setHex(this.isLampOn ? 0xfffaed : 0x222222);
     }
     if (window.audioEngine) {
       window.audioEngine.playLampClick();
@@ -1333,7 +1324,7 @@ class RetroScene {
           window.dispatchEvent(new CustomEvent("enterAgamOS"));
         }
       } else if (name === "deskLamp" || name === "lampSwitch" || name === "lampShade" || name === "lampBulb") {
-        this.setLamp(false); // Click at the lamp to close/turn it off
+        this.toggleLamp(); // Click anywhere on the lamp to toggle it on/off
       } else if (name === "deskSurface" || name === "deskTop") {
         this.setLamp(true); // Click onto the desktop to turn it on
       } else if (name === "coffeeMug") {
