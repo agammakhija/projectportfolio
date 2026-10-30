@@ -242,9 +242,9 @@ class RetroScene {
     this.scene.add(bgPurpleRight);
 
     // 4. Desk Lamp Spotlight (Warm vintage beam, ON by default)
-    this.lampLight = new THREE.SpotLight(0xffecc4, 2.2, 5.5, Math.PI / 4, 0.4, 1.2);
-    this.lampLight.position.set(-1.1, 2.05, 0.25);
-    this.lampLight.target.position.set(-0.2, 0.8, 0.4);
+    this.lampLight = new THREE.SpotLight(0xffedd5, 2.6, 5.5, Math.PI / 3.4, 0.45, 1.2);
+    this.lampLight.position.set(-0.72, 1.95, 0.26);
+    this.lampLight.target.position.set(-0.16, 0.98, 0.44);
     this.lampLight.castShadow = true;
     this.lampLight.shadow.mapSize.width = 1024;
     this.lampLight.shadow.mapSize.height = 1024;
@@ -383,6 +383,7 @@ class RetroScene {
     baseStand.position.set(0, 1.006, 0.06);
     baseStand.castShadow = true;
     baseStand.receiveShadow = true;
+    baseStand.name = "crtScreen";
     monitorGroup.add(baseStand);
 
     const standNeck = new THREE.Mesh(
@@ -392,6 +393,7 @@ class RetroScene {
     standNeck.position.set(0, 1.20, 0.02);
     standNeck.rotation.x = -0.15;
     standNeck.castShadow = true;
+    standNeck.name = "crtScreen";
     monitorGroup.add(standNeck);
 
     // Cable passthrough hole cutout on stand
@@ -401,6 +403,7 @@ class RetroScene {
     );
     cutout.rotateX(Math.PI / 2);
     cutout.position.set(0, 1.15, 0.02);
+    cutout.name = "crtScreen";
     monitorGroup.add(cutout);
 
     // 2. iMac Unibody Display Enclosure (Ultra-slim aluminum profile)
@@ -412,6 +415,7 @@ class RetroScene {
     displayBody.rotation.x = -0.03;
     displayBody.castShadow = true;
     displayBody.receiveShadow = true;
+    displayBody.name = "crtScreen";
     monitorGroup.add(displayBody);
 
     // Front Glass Bezel (Edge-to-edge glossy dark border)
@@ -421,6 +425,7 @@ class RetroScene {
     );
     glassBezel.position.set(0, 1.59, 0.235);
     glassBezel.rotation.x = -0.03;
+    glassBezel.name = "crtScreen";
     monitorGroup.add(glassBezel);
 
     // Front Aluminum Chin
@@ -430,6 +435,7 @@ class RetroScene {
     );
     chin.position.set(0, 1.21, 0.235);
     chin.rotation.x = -0.03;
+    chin.name = "crtScreen";
     monitorGroup.add(chin);
 
     // Polished Apple Logo on Chin
@@ -439,6 +445,7 @@ class RetroScene {
     );
     chinLogo.rotateX(Math.PI / 2);
     chinLogo.position.set(0, 1.21, 0.24);
+    chinLogo.name = "crtScreen";
     monitorGroup.add(chinLogo);
 
     // FaceTime HD Camera Lens (Top bezel center)
@@ -447,6 +454,7 @@ class RetroScene {
       new THREE.MeshBasicMaterial({ color: 0x0284c7 })
     );
     cameraLens.position.set(0, 1.93, 0.24);
+    cameraLens.name = "crtScreen";
     monitorGroup.add(cameraLens);
 
     // Large Polished Apple Logo on Rear of Mac
@@ -570,8 +578,17 @@ class RetroScene {
     monitorGroup.add(noteShadow);
 
     this.scene.add(monitorGroup);
-    this.interactiveObjects.push(this.crtScreenMesh);
-    this.interactiveObjects.push(stickyNote);
+    this.interactiveObjects.push(
+      this.crtScreenMesh,
+      glassBezel,
+      displayBody,
+      chin,
+      chinLogo,
+      cameraLens,
+      baseStand,
+      standNeck,
+      stickyNote
+    );
 
     // Resident Evil inspection references & state
     this.stickyNote = stickyNote;
@@ -852,96 +869,294 @@ class RetroScene {
     this.interactiveObjects.push(mouseBody);
   }
 
-  // --- Architect Desk Lamp (Interactive Switch & SpotLight) ---
+  // --- High-End Articulated Architect Desk Lamp ---
 
   buildDeskLamp() {
     const lampGroup = new THREE.Group();
     lampGroup.name = "deskLamp";
 
-    const metalMat = new THREE.MeshStandardMaterial({
-      color: 0x1f242d,
-      roughness: 0.35,
+    // Premium PBR Materials
+    const darkMetalMat = new THREE.MeshStandardMaterial({
+      color: 0x1c2128,
+      roughness: 0.32,
       metalness: 0.85
     });
     const brassMat = new THREE.MeshStandardMaterial({
-      color: 0xd4af37,
-      roughness: 0.3,
-      metalness: 0.9
+      color: 0xdfab35,
+      roughness: 0.22,
+      metalness: 0.95
+    });
+    const chromeMat = new THREE.MeshStandardMaterial({
+      color: 0xf1f5f9,
+      roughness: 0.12,
+      metalness: 0.98
+    });
+    const whiteEnamelMat = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      roughness: 0.18,
+      metalness: 0.05
     });
 
-    // Base
-    const base = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.14, 0.16, 0.04, 24),
-      metalMat
+    // 1. Weighted Tiered Base (Heavy cast iron with chamfered edge)
+    const baseBottom = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.165, 0.18, 0.024, 32),
+      darkMetalMat
     );
-    base.position.set(-1.15, 1.02, 0.15);
-    base.castShadow = true;
-    base.name = "deskLamp";
-    lampGroup.add(base);
+    baseBottom.position.set(-1.15, 1.012, 0.15);
+    baseBottom.castShadow = true;
+    baseBottom.receiveShadow = true;
+    baseBottom.name = "deskLamp";
+    lampGroup.add(baseBottom);
 
-    // Switch on base
-    const lampSwitch = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.015, 0.015, 0.02, 12),
+    const baseTop = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.12, 0.145, 0.02, 32),
+      darkMetalMat
+    );
+    baseTop.position.set(-1.15, 1.032, 0.15);
+    baseTop.castShadow = true;
+    baseTop.name = "deskLamp";
+    lampGroup.add(baseTop);
+
+    // Brass Turret Collar / Swivel Mount
+    const turret = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.038, 0.038, 0.036, 24),
       brassMat
     );
-    lampSwitch.position.set(-1.1, 1.045, 0.15);
-    lampSwitch.name = "deskLamp";
-    lampGroup.add(lampSwitch);
+    turret.position.set(-1.15, 1.055, 0.15);
+    turret.name = "deskLamp";
+    lampGroup.add(turret);
 
-    // Lower Arm
-    const arm1 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, 0.65, 12),
-      metalMat
-    );
-    arm1.position.set(-1.15, 1.34, 0.15);
-    arm1.rotation.z = -0.35;
-    arm1.castShadow = true;
-    arm1.name = "deskLamp";
-    lampGroup.add(arm1);
-
-    // Elbow Joint
-    const elbow = new THREE.Mesh(
-      new THREE.SphereGeometry(0.035, 16, 16),
+    // Tactile Brass Toggle Switch
+    const switchBase = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.016, 0.016, 0.008, 16),
       brassMat
     );
-    elbow.position.set(-1.05, 1.62, 0.15);
-    elbow.name = "deskLamp";
-    lampGroup.add(elbow);
+    switchBase.position.set(-1.08, 1.045, 0.18);
+    switchBase.name = "deskLamp";
+    lampGroup.add(switchBase);
 
-    // Upper Arm
-    const arm2 = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.012, 0.012, 0.58, 12),
-      metalMat
+    const switchLever = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.004, 0.006, 0.03, 12),
+      brassMat
     );
-    arm2.position.set(-0.92, 1.84, 0.2);
-    arm2.rotation.z = 0.55;
-    arm2.castShadow = true;
-    arm2.name = "deskLamp";
-    lampGroup.add(arm2);
+    switchLever.position.set(-1.075, 1.06, 0.185);
+    switchLever.rotation.z = -0.35;
+    switchLever.name = "deskLamp";
+    lampGroup.add(switchLever);
 
-    // Lamp Shade (Cone)
-    const shade = new THREE.Mesh(
-      new THREE.ConeGeometry(0.16, 0.22, 24, 1, true),
-      metalMat
+    // 2. Base Bracket Flanges (Brass twin brackets holding lower struts)
+    [-0.022, 0.022].forEach(zOffset => {
+      const bracket = new THREE.Mesh(
+        new THREE.BoxGeometry(0.012, 0.06, 0.018),
+        brassMat
+      );
+      bracket.position.set(-1.15, 1.085, 0.15 + zOffset);
+      bracket.name = "deskLamp";
+      lampGroup.add(bracket);
+    });
+
+    // 3. Lower Cantilever Twin Struts (Iconic dual parallel tubular rods)
+    [-0.02, 0.02].forEach(zOffset => {
+      const rod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.0065, 0.0065, 0.68, 12),
+        darkMetalMat
+      );
+      rod.position.set(-1.11, 1.35, 0.15 + zOffset);
+      rod.rotation.z = -0.32;
+      rod.castShadow = true;
+      rod.name = "deskLamp";
+      lampGroup.add(rod);
+    });
+
+    // Lower Stabilizer Crossbars
+    [1.18, 1.52].forEach(yPos => {
+      const bar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.005, 0.005, 0.05, 8),
+        brassMat
+      );
+      bar.rotation.x = Math.PI / 2;
+      bar.position.set(-1.15 + (yPos - 1.08) * 0.11, yPos, 0.15);
+      bar.name = "deskLamp";
+      lampGroup.add(bar);
+    });
+
+    // Lower Chrome Counterbalance Tension Springs
+    [-0.012, 0.012].forEach(zOffset => {
+      const spring = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.0075, 0.0075, 0.40, 16),
+        chromeMat
+      );
+      spring.position.set(-1.13, 1.28, 0.15 + zOffset);
+      spring.rotation.z = -0.22;
+      spring.name = "deskLamp";
+      lampGroup.add(spring);
+    });
+
+    // 4. Center Articulated Elbow Joint (Twin brass disc plates + adjustment knob)
+    const elbowCenter = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.032, 0.032, 0.06, 20),
+      brassMat
     );
-    shade.position.set(-0.78, 2.02, 0.25);
-    shade.rotation.z = 0.95;
-    shade.rotation.x = 0.2;
-    shade.castShadow = true;
-    shade.name = "deskLamp";
-    lampGroup.add(shade);
+    elbowCenter.rotation.x = Math.PI / 2;
+    elbowCenter.position.set(-1.0, 1.62, 0.15);
+    elbowCenter.name = "deskLamp";
+    lampGroup.add(elbowCenter);
 
-    // Glowing Bulb inside shade
+    // Brass Wingnut / Adjustment thumbscrew on elbow
+    const thumbKnob = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.016, 0.016, 0.02, 16),
+      brassMat
+    );
+    thumbKnob.rotation.x = Math.PI / 2;
+    thumbKnob.position.set(-1.0, 1.62, 0.19);
+    thumbKnob.name = "deskLamp";
+    lampGroup.add(thumbKnob);
+
+    const thumbWing = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, 0.012, 0.006),
+      brassMat
+    );
+    thumbWing.position.set(-1.0, 1.62, 0.202);
+    thumbWing.name = "deskLamp";
+    lampGroup.add(thumbWing);
+
+    // 5. Upper Cantilever Twin Struts (Dual parallel tubular rods angling forward)
+    [-0.018, 0.018].forEach(zOffset => {
+      const rod = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.0065, 0.0065, 0.62, 12),
+        darkMetalMat
+      );
+      rod.position.set(-0.86, 1.84, 0.18 + zOffset);
+      rod.rotation.z = 0.52;
+      rod.castShadow = true;
+      rod.name = "deskLamp";
+      lampGroup.add(rod);
+    });
+
+    // Upper Crossbar Braces
+    [1.72, 1.94].forEach(yPos => {
+      const bar = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.005, 0.005, 0.045, 8),
+        brassMat
+      );
+      bar.rotation.x = Math.PI / 2;
+      bar.position.set(-1.0 + (yPos - 1.62) * 0.44, yPos, 0.18);
+      bar.name = "deskLamp";
+      lampGroup.add(bar);
+    });
+
+    // Upper Chrome Tension Springs
+    const upperSpring = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.0075, 0.0075, 0.36, 16),
+      chromeMat
+    );
+    upperSpring.position.set(-0.91, 1.78, 0.18);
+    upperSpring.rotation.z = 0.42;
+    upperSpring.name = "deskLamp";
+    lampGroup.add(upperSpring);
+
+    // 6. Wrist Swivel Joint (Brass 2-axis coupler)
+    const wrist = new THREE.Mesh(
+      new THREE.SphereGeometry(0.026, 16, 16),
+      brassMat
+    );
+    wrist.position.set(-0.73, 2.03, 0.20);
+    wrist.name = "deskLamp";
+    lampGroup.add(wrist);
+
+    // 7. Architect Bell Shade (Flared dome with crown vent & white reflector)
+    const shadeGroup = new THREE.Group();
+    shadeGroup.position.set(-0.71, 2.02, 0.22);
+    shadeGroup.rotation.z = 0.88;
+    shadeGroup.rotation.x = 0.24;
+    shadeGroup.name = "deskLamp";
+
+    // Shade Crown Cap (Ventilated neck)
+    const shadeCrown = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.045, 0.065, 0.05, 24),
+      darkMetalMat
+    );
+    shadeCrown.position.set(0, 0.11, 0);
+    shadeCrown.castShadow = true;
+    shadeCrown.name = "deskLamp";
+    shadeGroup.add(shadeCrown);
+
+    // Brass cooling ring on crown
+    const ventRing = new THREE.Mesh(
+      new THREE.TorusGeometry(0.056, 0.006, 8, 24),
+      brassMat
+    );
+    ventRing.rotation.x = Math.PI / 2;
+    ventRing.position.set(0, 0.09, 0);
+    ventRing.name = "deskLamp";
+    shadeGroup.add(ventRing);
+
+    // Main Flared Cone Shade (Dark gunmetal exterior)
+    const shadeOuter = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.065, 0.165, 0.20, 32, 1, true),
+      darkMetalMat
+    );
+    shadeOuter.position.set(0, 0, 0);
+    shadeOuter.castShadow = true;
+    shadeOuter.name = "deskLamp";
+    shadeGroup.add(shadeOuter);
+
+    // White Enamel Interior Reflector
+    const shadeInner = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.063, 0.163, 0.198, 32, 1, true),
+      whiteEnamelMat
+    );
+    shadeInner.position.set(0, 0, 0);
+    shadeInner.name = "deskLamp";
+    shadeGroup.add(shadeInner);
+
+    // Rolled Brass Rim at Shade Opening
+    const shadeRim = new THREE.Mesh(
+      new THREE.TorusGeometry(0.165, 0.006, 12, 32),
+      brassMat
+    );
+    shadeRim.rotation.x = Math.PI / 2;
+    shadeRim.position.set(0, -0.10, 0);
+    shadeRim.name = "deskLamp";
+    shadeGroup.add(shadeRim);
+
+    // Brass Bulb Socket Collar
+    const socket = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.026, 0.026, 0.03, 16),
+      brassMat
+    );
+    socket.position.set(0, 0.05, 0);
+    socket.name = "deskLamp";
+    shadeGroup.add(socket);
+
+    // Warm Glowing Frosted Light Bulb
     this.lampBulb = new THREE.Mesh(
-      new THREE.SphereGeometry(0.045, 16, 16),
-      new THREE.MeshBasicMaterial({ color: 0xfff4d6 })
+      new THREE.SphereGeometry(0.046, 20, 20),
+      new THREE.MeshBasicMaterial({ color: 0xfffaed })
     );
-    this.lampBulb.position.set(-0.76, 2.0, 0.25);
+    this.lampBulb.position.set(0, -0.01, 0);
     this.lampBulb.name = "deskLamp";
-    lampGroup.add(this.lampBulb);
+    shadeGroup.add(this.lampBulb);
 
+    lampGroup.add(shadeGroup);
     this.scene.add(lampGroup);
-    this.interactiveObjects.push(base, lampSwitch, arm1, elbow, arm2, shade, this.lampBulb);
+
+    // Register all interactive meshes for raycast clicks
+    this.interactiveObjects.push(
+      baseBottom,
+      baseTop,
+      turret,
+      switchBase,
+      switchLever,
+      elbowCenter,
+      thumbKnob,
+      thumbWing,
+      wrist,
+      shadeCrown,
+      shadeOuter,
+      shadeRim,
+      this.lampBulb
+    );
   }
 
   // --- Desk Props (Coffee Mug, Floppy Disks) ---

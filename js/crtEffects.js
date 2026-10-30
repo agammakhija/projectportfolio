@@ -8,7 +8,7 @@ class CrtEffects {
     this.desktop = document.getElementById("desktop");
 
     this.isCrtEnabled = true;
-    this.isScanlinesEnabled = true;
+    this.isScanlinesEnabled = false; // Default: no CRT scanlines
     this.isCurvatureEnabled = true;
     this.currentTheme = "color"; // "color", "green", "amber"
     this.currentWallpaper = "teal";
@@ -17,6 +17,7 @@ class CrtEffects {
   }
 
   init() {
+    this.toggleScanlines(false);
     this.setupThemeSelectors();
     this.setupWallpaperSelectors();
     this.setupEffectToggles();

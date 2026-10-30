@@ -355,11 +355,7 @@ function setupBootSequence() {
 // --- HUD & View Transitions ---
 
 function setupHudControls() {
-  const viewToggleBtn = document.getElementById("hud-btn-view");
   const crtWrapper = document.getElementById("crt-screen-wrapper");
-  const hudHeader = document.querySelector(".hud-header");
-  const taskbarRoomBtn = document.getElementById("taskbar-room-btn");
-  const startMenuRoomBtn = document.getElementById("start-menu-room-btn");
   const menubarRoomBtn = document.getElementById("menubar-room-btn");
   const menubarSoundBtn = document.getElementById("menubar-sound-btn");
 
@@ -374,12 +370,6 @@ function setupHudControls() {
       }
     }
 
-    if (viewToggleBtn) {
-      viewToggleBtn.innerHTML = mode === "desk"
-        ? `<span>📺 Enter AgamOS (Screen)</span>`
-        : `<span>🪑 Desk Overview (3D Room)</span>`;
-    }
-
     if (mode === "monitor") {
       // Play Apple loading screen when entering the desktop!
       playAppleBootTransition(() => {
@@ -392,19 +382,7 @@ function setupHudControls() {
         crtWrapper.classList.remove("fullscreen-mode");
       }
     }
-
-    // Hide top overview header bar when in monitor mode so it never blocks window titlebar buttons
-    if (hudHeader) {
-      hudHeader.classList.toggle("hidden-in-monitor", mode === "monitor");
-    }
   };
-
-  if (viewToggleBtn) {
-    viewToggleBtn.addEventListener("click", () => {
-      setView(currentView === "desk" ? "monitor" : "desk");
-      if (window.audioEngine) window.audioEngine.playClick();
-    });
-  }
 
   // Click on desktop to turn lamp on
   const desktopEl = document.getElementById("desktop");
@@ -443,22 +421,7 @@ function setupHudControls() {
     });
   }
 
-  if (taskbarRoomBtn) {
-    taskbarRoomBtn.addEventListener("click", () => {
-      setView("desk");
-      if (window.audioEngine) window.audioEngine.playClick();
-    });
-  }
-
-  if (startMenuRoomBtn) {
-    startMenuRoomBtn.addEventListener("click", () => {
-      if (window.windowManager && window.windowManager.closeStartMenu) window.windowManager.closeStartMenu();
-      setView("desk");
-      if (window.audioEngine) window.audioEngine.playClick();
-    });
-  }
-
-  // Custom Event from 3D scene when monitor is clicked
+  // Custom Event from 3D scene when Mac screen is clicked
   window.addEventListener("enterAgamOS", () => {
     setView("monitor");
   });

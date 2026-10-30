@@ -23,19 +23,6 @@
 </head>
 <body>
   <div id="app">
-    <!-- Top Floating HUD Navigation -->
-    <header class="hud-header">
-      <div class="hud-brand">
-        <span>AGAM MAKHIJA</span>
-        <span class="hud-badge">PORTFOLIO '98</span>
-      </div>
-      <div class="hud-controls">
-        <button id="hud-btn-view" class="hud-btn hud-btn-primary" title="Toggle between 3D Room and Focused CRT Screen">
-          <span>📺 Enter AgamOS (Screen)</span>
-        </button>
-      </div>
-    </header>
-
     <!-- 3D WebGL Canvas Layer -->
     <div id="canvas-container"></div>
 
@@ -51,7 +38,7 @@
     </div>
 
     <!-- macOS Operating System Layer -->
-    <div id="crt-screen-wrapper">
+    <div id="crt-screen-wrapper" class="no-scanlines">
       <div id="crt-screen-frame">
         <div class="crt-vignette"></div>
 
@@ -504,7 +491,7 @@
                 <div class="settings-box">
                   <h4>Screen Effects</h4>
                   <label class="settings-checkbox-row">
-                    <input type="checkbox" id="toggle-scanlines" checked>
+                    <input type="checkbox" id="toggle-scanlines">
                     <span>Simulate CRT Scanlines</span>
                   </label>
                   <label class="settings-checkbox-row">
