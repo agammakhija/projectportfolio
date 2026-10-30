@@ -309,8 +309,6 @@ function populateRecycleBin() {
 
 function setupBootSequence() {
   const bootOverlay = document.getElementById("boot-overlay");
-  const biosScreen = document.getElementById("bios-screen");
-  const splashScreen = document.getElementById("splash-screen");
   const progressFill = document.getElementById("boot-progress-fill");
 
   const startBoot = () => {
@@ -318,37 +316,28 @@ function setupBootSequence() {
 
     bootOverlay.style.display = "flex";
     bootOverlay.style.opacity = "1";
-    if (biosScreen) biosScreen.style.display = "block";
-    if (splashScreen) splashScreen.style.display = "none";
+    if (progressFill) progressFill.style.width = "0%";
 
-    // Play stepper / floppy buzz
+    // Play iconic Apple startup chime
     if (window.audioEngine) {
-      window.audioEngine.playBeep(120, 0.08);
+      window.audioEngine.playStartupChime();
     }
 
-    setTimeout(() => {
-      if (biosScreen) biosScreen.style.display = "none";
-      if (splashScreen) splashScreen.style.display = "flex";
+    let progress = 0;
+    const progTimer = setInterval(() => {
+      progress += 12;
+      if (progressFill) progressFill.style.width = `${progress}%`;
 
-      let progress = 0;
-      const progTimer = setInterval(() => {
-        progress += 15;
-        if (progressFill) progressFill.style.width = `${progress}%`;
-
-        if (progress >= 100) {
-          clearInterval(progTimer);
+      if (progress >= 100) {
+        clearInterval(progTimer);
+        setTimeout(() => {
+          bootOverlay.style.opacity = "0";
           setTimeout(() => {
-            bootOverlay.style.opacity = "0";
-            setTimeout(() => {
-              bootOverlay.style.display = "none";
-              if (window.audioEngine) {
-                window.audioEngine.playStartupChime();
-              }
-            }, 600);
-          }, 300);
-        }
-      }, 100);
-    }, 1200);
+            bootOverlay.style.display = "none";
+          }, 600);
+        }, 300);
+      }
+    }, 90);
   };
 
   // Run on initial load
@@ -371,6 +360,9 @@ function setupHudControls() {
   const hudHeader = document.querySelector(".hud-header");
   const taskbarRoomBtn = document.getElementById("taskbar-room-btn");
   const startMenuRoomBtn = document.getElementById("start-menu-room-btn");
+  const menubarRoomBtn = document.getElementById("menubar-room-btn");
+  const menubarSoundBtn = document.getElementById("menubar-sound-btn");
+  const menubarCrtBtn = document.getElementById("menubar-crt-btn");
 
   let currentView = "desk"; // "desk" or "monitor"
 
@@ -412,6 +404,39 @@ function setupHudControls() {
     });
   }
 
+  if (menubarRoomBtn) {
+    menubarRoomBtn.addEventListener("click", () => {
+      setView("desk");
+      if (window.audioEngine) window.audioEngine.playClick();
+    });
+  }
+
+  if (menubarSoundBtn) {
+    menubarSoundBtn.addEventListener("click", () => {
+      if (window.audioEngine) {
+        const isMuted = window.audioEngine.toggleMute();
+        menubarSoundBtn.textContent = isMuted ? "🔇" : "🔊";
+        if (soundToggleBtn) {
+          soundToggleBtn.innerHTML = isMuted ? `<span>🔇 Sound: OFF</span>` : `<span>🔊 Sound: ON</span>`;
+          soundToggleBtn.classList.toggle("muted", isMuted);
+        }
+      }
+    });
+  }
+
+  if (menubarCrtBtn) {
+    menubarCrtBtn.addEventListener("click", () => {
+      if (window.crtEffects) {
+        const newState = !window.crtEffects.isScanlinesEnabled;
+        window.crtEffects.toggleScanlines(newState);
+        if (crtToggleBtn) {
+          crtToggleBtn.innerHTML = newState ? `<span>📺 CRT FX: ON</span>` : `<span>💻 CRT FX: OFF</span>`;
+        }
+        if (window.audioEngine) window.audioEngine.playClick();
+      }
+    });
+  }
+
   if (taskbarRoomBtn) {
     taskbarRoomBtn.addEventListener("click", () => {
       setView("desk");
@@ -421,7 +446,7 @@ function setupHudControls() {
 
   if (startMenuRoomBtn) {
     startMenuRoomBtn.addEventListener("click", () => {
-      if (window.windowManager) window.windowManager.closeStartMenu();
+      if (window.windowManager && window.windowManager.closeStartMenu) window.windowManager.closeStartMenu();
       setView("desk");
       if (window.audioEngine) window.audioEngine.playClick();
     });

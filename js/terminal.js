@@ -59,8 +59,11 @@ class TerminalApp {
   }
 
   printWelcome() {
+    const now = new Date();
+    this.printLine(`Last login: ${now.toDateString()} ${now.toLocaleTimeString()} on ttys001`, "dim");
+    this.printLine("Darwin MacBook-Pro.local 24.2.0 Darwin Kernel Version 24.2.0: arm64", "dim");
     this.printLine("================================================================", "info");
-    this.printLine("  AGAM-DOS v6.22 [Phosphor Shell] (C) 1998-2026 Agam Makhija", "highlight");
+    this.printLine("  AgamOS Terminal — zsh shell [Developer Edition]", "highlight");
     this.printLine("================================================================", "info");
     this.printAgamBulletNotice();
     this.printLine("Type 'agam man' to read the complete manual for the 'agam' command.", "dim");
@@ -82,7 +85,7 @@ class TerminalApp {
 
   executeCommand(rawCmd) {
     if (!rawCmd) {
-      this.printLine("C:\\AGAM> ");
+      this.printLine("agam@MacBook-Pro ~ % ");
       this.printLine("  • IMPORTANT: All commands in this shell must be prefixed with 'agam'. Example: 'agam skills' or 'agam man'.", "warn");
       this.scrollToBottom();
       return;
@@ -91,7 +94,7 @@ class TerminalApp {
     this.history.push(rawCmd);
     this.historyIndex = -1;
 
-    this.printLine(`C:\\AGAM> ${rawCmd}`, "cmd-echo");
+    this.printLine(`agam@MacBook-Pro ~ % ${rawCmd}`, "cmd-echo");
 
     const parts = rawCmd.split(" ").filter(Boolean);
     const command = parts[0].toLowerCase();

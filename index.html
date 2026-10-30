@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Agam Makhija — Interactive 3D Portfolio & AgamOS 98</title>
-  <meta name="description" content="Personal portfolio of software engineer & creative developer Agam Makhija. Featuring a 3D retro workstation room and a simulated 90s CRT operating system.">
+  <title>Agam Makhija — Interactive 3D Workstation & AgamOS (macOS)</title>
+  <meta name="description" content="Personal portfolio of software engineer & creative developer Agam Makhija. Featuring an interactive 3D workstation room and a sleek macOS desktop environment.">
 
   <!-- Original 3D portfolio concept & design by Henry Heffernan (https://github.com/henryjeff/portfolio-website) -->
   <!-- Licensed under the MIT License. See LICENSE and ATTRIBUTION.md -->
@@ -59,14 +59,83 @@
       </div>
     </div>
 
-    <!-- Retro CRT Operating System Layer -->
+    <!-- macOS Operating System Layer -->
     <div id="crt-screen-wrapper">
       <div id="crt-screen-frame">
         <div class="crt-vignette"></div>
-        <button id="crt-exit-btn" class="crt-exit-pill" title="Return to 3D Room Overview">🪑 3D Room View</button>
+
+        <!-- macOS Top Menu Bar -->
+        <header id="macos-menubar" class="macos-menubar">
+          <div class="menubar-left">
+            <div class="menubar-item apple-menu-trigger" id="apple-menu-trigger" title="Apple Menu">
+              <span class="apple-logo"></span>
+            </div>
+            <div class="menubar-item app-name font-bold" id="menubar-app-name">Finder</div>
+            <div class="menubar-item menubar-hide-sm">File</div>
+            <div class="menubar-item menubar-hide-sm">Edit</div>
+            <div class="menubar-item menubar-hide-sm">View</div>
+            <div class="menubar-item menubar-hide-sm">Go</div>
+            <div class="menubar-item menubar-hide-sm">Window</div>
+            <div class="menubar-item menubar-hide-sm">Help</div>
+          </div>
+
+          <div class="menubar-right">
+            <button id="menubar-room-btn" class="menubar-pill-btn" title="Return to 3D Room Desk Overview">
+              <span class="menubar-room-icon">🪑</span>
+              <span>Room</span>
+            </button>
+            <div class="menubar-icon-btn" id="menubar-sound-btn" title="Toggle Sound">🔊</div>
+            <div class="menubar-icon-btn" id="menubar-crt-btn" title="Toggle CRT Effects">📺</div>
+            <div class="menubar-icon-btn" id="menubar-spotlight-btn" title="Spotlight Search (Cmd+Space)">🔍</div>
+            <div class="menubar-clock" id="tray-clock">Fri Oct 31 12:00 AM</div>
+          </div>
+        </header>
+
+        <!-- Apple Menu Dropdown -->
+        <div id="apple-menu" class="apple-dropdown-menu hidden">
+          <div class="apple-menu-item" id="menu-about-mac">
+            <span class="apple-menu-icon"></span>
+            <span>About This Mac</span>
+          </div>
+          <div class="apple-menu-divider"></div>
+          <div class="apple-menu-item" data-app="settings">
+            <span class="apple-menu-icon">⚙️</span>
+            <span>System Settings...</span>
+          </div>
+          <div class="apple-menu-item" data-app="about">
+            <span class="apple-menu-icon">👤</span>
+            <span>About Agam Makhija</span>
+          </div>
+          <div class="apple-menu-item" data-app="portfolio">
+            <span class="apple-menu-icon">🕷️</span>
+            <span>Spider-Man Safari</span>
+          </div>
+          <div class="apple-menu-divider"></div>
+          <div class="apple-menu-item" id="menu-spotlight-trigger">
+            <span class="apple-menu-icon">🔍</span>
+            <span>Spotlight Search...</span>
+          </div>
+          <div class="apple-menu-item" id="menu-force-quit">
+            <span class="apple-menu-icon">⚡</span>
+            <span>Force Quit Active App</span>
+          </div>
+          <div class="apple-menu-divider"></div>
+          <div class="apple-menu-item" id="menu-room-overview">
+            <span class="apple-menu-icon">🪑</span>
+            <span>3D Room Overview</span>
+          </div>
+          <div class="apple-menu-item" onclick="window.dispatchEvent(new CustomEvent('rebootAgamOS'))">
+            <span class="apple-menu-icon">🔄</span>
+            <span>Restart...</span>
+          </div>
+          <div class="apple-menu-item" id="menu-sleep">
+            <span class="apple-menu-icon">🌙</span>
+            <span>Sleep</span>
+          </div>
+        </div>
 
         <!-- Desktop Environment -->
-        <main id="desktop" class="desktop wp-teal">
+        <main id="desktop" class="desktop wp-sequoia">
           <!-- Desktop Icons -->
           <div class="desktop-icons-container">
             <div class="desktop-icon" data-app="about">
@@ -123,16 +192,16 @@
                 <span class="window-title-text">About Me — Agam Makhija</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>E</u>dit</span>
-              <span><u>V</u>iew</span>
-              <span><u>H</u>elp</span>
+              <span>File</span>
+              <span>Edit</span>
+              <span>View</span>
+              <span>Help</span>
             </div>
             <div class="window-content">
               <div class="about-container">
@@ -162,30 +231,31 @@
           </div>
 
           <!-- Application Window 2: Spider-Man Portfolio Browser -->
-          <div id="win-portfolio" class="window hidden" data-title="Agam Makhija Portfolio — Internet Explorer" data-icon="🕷️" style="width: 820px; height: 530px;">
+          <div id="win-portfolio" class="window hidden" data-title="Safari — Spider-Man Portfolio" data-icon="🕷️" style="width: 820px; height: 530px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">🕷️</span>
-                <span class="window-title-text">Agam Makhija — Spider-Man Portfolio (Internet Explorer)</span>
+                <span class="window-title-text">Agam Makhija — Spider-Man Portfolio (Safari)</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close (Esc)">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom / Maximize">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>E</u>dit</span>
-              <span><u>V</u>iew</span>
-              <span><u>G</u>o</span>
-              <span><u>F</u>avorites</span>
-              <span><u>H</u>elp</span>
+              <span>File</span>
+              <span>Edit</span>
+              <span>View</span>
+              <span>History</span>
+              <span>Bookmarks</span>
+              <span>Window</span>
+              <span>Help</span>
             </div>
             <div class="browser-toolbar">
-              <button class="retro-btn btn-sm" id="portfolio-browser-reload" title="Reload Portfolio">🔄 Reload</button>
+              <button class="retro-btn btn-sm" id="portfolio-browser-reload" title="Reload Portfolio">🔄</button>
               <div class="browser-address-box">
-                <span style="font-size: 11px; font-weight: bold; color: #1e293b;"><u>A</u>ddress:</span>
+                <span class="browser-address-lock">🔒</span>
                 <input type="text" class="browser-url-input" value="https://portfolio-swart-pi-47.vercel.app/" readonly>
               </div>
               <a href="https://portfolio-swart-pi-47.vercel.app/" target="_blank" rel="noopener noreferrer" class="retro-btn btn-sm" style="text-decoration:none; color:inherit; font-weight:bold;" title="Open in external browser window">🌐 Pop Out</a>
@@ -208,16 +278,16 @@
                 <span class="window-title-text">Skills Matrix — Python 3 & AI Prompt Engineering</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>V</u>iew</span>
-              <span><u>S</u>pecifications</span>
-              <span><u>H</u>elp</span>
+              <span>File</span>
+              <span>View</span>
+              <span>Specifications</span>
+              <span>Help</span>
             </div>
             <div class="window-content">
               <div id="skills-page-content" class="skills-page-container">
@@ -238,16 +308,16 @@
                 <span class="window-title-text">Academic Chronicles & Education — Agam Makhija</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>V</u>iew</span>
-              <span><u>R</u>ecords</span>
-              <span><u>H</u>elp</span>
+              <span>File</span>
+              <span>View</span>
+              <span>Records</span>
+              <span>Help</span>
             </div>
             <div class="window-content">
               <div id="education-page-content" class="education-page-container">
@@ -260,39 +330,39 @@
             </div>
           </div>
 
-          <!-- Application Window 4: Agam-DOS Terminal -->
-          <div id="win-terminal" class="window hidden" data-title="Agam-DOS Prompt" data-icon="💻" style="width: 640px; height: 420px;">
+          <!-- Application Window 4: macOS Terminal -->
+          <div id="win-terminal" class="window hidden" data-title="Terminal — zsh" data-icon="💻" style="width: 640px; height: 420px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">💻</span>
-                <span class="window-title-text">MS-DOS Prompt — C:\AGAM\PORTFOLIO</span>
+                <span class="window-title-text">Terminal — agam@MacBook-Pro — 80×24</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-content terminal-window-content">
               <div class="terminal-output"></div>
               <div class="terminal-input-row">
-                <span class="terminal-prompt">C:\AGAM&gt;</span>
+                <span class="terminal-prompt">agam@MacBook-Pro ~ %</span>
                 <input type="text" class="terminal-input" autofocus spellcheck="false" autocomplete="off">
               </div>
             </div>
           </div>
 
-          <!-- Application Window 5: Winamp Media Player -->
-          <div id="win-music" class="window hidden" data-title="Winamp 1998" data-icon="🎵" style="width: 380px; height: 260px;">
+          <!-- Application Window 5: macOS Music Player -->
+          <div id="win-music" class="window hidden" data-title="Music — Spider-Man Soundtracks" data-icon="🎵" style="width: 380px; height: 260px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">🎵</span>
-                <span class="window-title-text">WINAMP — Spider-Man Soundtracks</span>
+                <span class="window-title-text">Music — Spider-Man Soundtracks</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-content" style="padding: 4px; background: #27272a;">
@@ -332,14 +402,14 @@
                 <span class="window-title-text">Minesweeper</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>G</u>ame</span>
-              <span><u>H</u>elp</span>
+              <span>Game</span>
+              <span>Help</span>
             </div>
             <div class="window-content" style="padding: 4px; background: #c0c0c0; display:flex; justify-content:center;">
               <div class="minesweeper-container">
@@ -361,16 +431,16 @@
                 <span class="window-title-text">untitled - Paint</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>E</u>dit</span>
-              <span><u>I</u>mage</span>
-              <span><u>O</u>ptions</span>
+              <span>File</span>
+              <span>Edit</span>
+              <span>Image</span>
+              <span>Help</span>
             </div>
             <div class="window-content" style="padding: 4px; display: flex; flex-direction: column;">
               <div class="paint-container">
@@ -397,24 +467,26 @@
             </div>
           </div>
 
-          <!-- Application Window 8: Contact Me -->
-          <div id="win-contact" class="window hidden" data-title="Compose: Contact Agam Makhija" data-icon="✉️" style="width: 520px; height: 420px;">
+          <!-- Application Window 8: Mail / Contact -->
+          <div id="win-contact" class="window hidden" data-title="Mail — Compose" data-icon="✉️" style="width: 520px; height: 420px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">✉️</span>
-                <span class="window-title-text">Outlook Express — New Message</span>
+                <span class="window-title-text">Mail — New Message</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>F</u>ile</span>
-              <span><u>E</u>dit</span>
-              <span><u>I</u>nsert</span>
-              <span><u>F</u>ormat</span>
+              <span>File</span>
+              <span>Edit</span>
+              <span>Format</span>
+              <span>View</span>
+              <span>Message</span>
+              <span>Help</span>
             </div>
             <div class="window-content">
               <div class="contact-container">
@@ -451,17 +523,17 @@
             </div>
           </div>
 
-          <!-- Application Window 9: Display Settings -->
-          <div id="win-settings" class="window hidden" data-title="Display Properties" data-icon="⚙️" style="width: 440px; height: 380px;">
+          <!-- Application Window 9: System Settings -->
+          <div id="win-settings" class="window hidden" data-title="System Settings" data-icon="⚙️" style="width: 480px; height: 400px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">⚙️</span>
-                <span class="window-title-text">Display Properties</span>
+                <span class="window-title-text">System Settings</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-content">
@@ -476,12 +548,13 @@
                 </div>
 
                 <div class="settings-box">
-                  <h4>Desktop Wallpaper</h4>
+                  <h4>macOS Wallpaper</h4>
                   <div class="wallpaper-options-grid">
-                    <button class="wallpaper-option selected" data-wallpaper="teal">Windows Teal</button>
+                    <button class="wallpaper-option selected" data-wallpaper="sequoia">macOS Sequoia</button>
+                    <button class="wallpaper-option" data-wallpaper="monterey">macOS Monterey</button>
+                    <button class="wallpaper-option" data-wallpaper="aqua">Classic Aqua</button>
+                    <button class="wallpaper-option" data-wallpaper="dark">Space Titanium</button>
                     <button class="wallpaper-option" data-wallpaper="cyber">Cyber Midnight</button>
-                    <button class="wallpaper-option" data-wallpaper="starfield">Starfield</button>
-                    <button class="wallpaper-option" data-wallpaper="matrix">Matrix Code</button>
                   </div>
                 </div>
 
@@ -500,17 +573,17 @@
             </div>
           </div>
 
-          <!-- Application Window 10: Recycle Bin -->
-          <div id="win-recycle" class="window hidden" data-title="Recycle Bin" data-icon="🗑️" style="width: 420px; height: 300px;">
+          <!-- Application Window 10: Trash -->
+          <div id="win-recycle" class="window hidden" data-title="Trash" data-icon="🗑️" style="width: 420px; height: 300px;">
             <div class="window-titlebar">
               <div class="window-title-left">
                 <span class="window-icon">🗑️</span>
-                <span class="window-title-text">Recycle Bin</span>
+                <span class="window-title-text">Trash</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
@@ -532,16 +605,16 @@
                 <span class="window-title-text">Craft98 — Minecraft Alpha 3D</span>
               </div>
               <div class="window-controls">
-                <button class="win-btn win-btn-min">_</button>
-                <button class="win-btn win-btn-max">□</button>
-                <button class="win-btn win-btn-close">✕</button>
+                <button class="win-btn win-btn-close" title="Close">✕</button>
+                <button class="win-btn win-btn-min" title="Minimize">–</button>
+                <button class="win-btn win-btn-max" title="Zoom">⤢</button>
               </div>
             </div>
             <div class="window-menubar">
-              <span><u>G</u>ame</span>
-              <span><u>W</u>orld</span>
-              <span><u>O</u>ptions</span>
-              <span><u>H</u>elp</span>
+              <span>Game</span>
+              <span>World</span>
+              <span>Options</span>
+              <span>Help</span>
             </div>
             <div class="window-content minecraft-window-content">
               <div class="minecraft-viewport">
@@ -570,115 +643,131 @@
           </div>
         </main>
 
-        <!-- Windows 98 Taskbar -->
-        <footer class="taskbar">
-          <button id="start-btn" class="start-button">
-            <span class="start-icon">🪟</span>
-            <span>Start</span>
-          </button>
-
-          <button id="taskbar-room-btn" class="taskbar-room-btn" title="Return to 3D Room Overview">
-            <span class="taskbar-room-icon">🪑</span>
-            <span>3D Room</span>
-          </button>
-
-          <div id="taskbar-apps" class="taskbar-apps"></div>
-
-          <div class="system-tray">
-            <span class="tray-icon" title="Audio Synthesizer Active">🔊</span>
-            <span class="tray-icon" title="AgamOS 98 Connected">🖧</span>
-            <span id="tray-clock" class="tray-clock">12:00 PM</span>
+        <!-- macOS Dock -->
+        <nav id="macos-dock" class="macos-dock" aria-label="macOS Application Dock">
+          <div class="dock-item" data-app="about" data-tooltip="Finder (About Me)">
+            <div class="dock-icon-wrapper dock-icon-finder">👤</div>
+            <div class="dock-tooltip">About Me</div>
+            <div class="dock-dot"></div>
           </div>
-        </footer>
 
-        <!-- Start Menu Popup -->
-        <div id="start-menu" class="start-menu">
-          <div class="start-menu-banner">
-            <span class="banner-text">AgamOS 98</span>
+          <div class="dock-item" data-app="portfolio" data-tooltip="Safari (Spider-Man Portfolio)">
+            <div class="dock-icon-wrapper dock-icon-safari">🕷️</div>
+            <div class="dock-tooltip">Spider-Man Portfolio</div>
+            <div class="dock-dot"></div>
           </div>
-          <div class="start-menu-items">
-            <div class="start-item" data-app="about">
-              <span class="start-item-icon">👤</span>
-              <span>About Agam</span>
+
+          <div class="dock-item" data-app="skills" data-tooltip="Skills Matrix">
+            <div class="dock-icon-wrapper dock-icon-skills">🐍</div>
+            <div class="dock-tooltip">Skills Matrix</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="education" data-tooltip="Education Chronicles">
+            <div class="dock-icon-wrapper dock-icon-education">🎓</div>
+            <div class="dock-tooltip">Education</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="terminal" data-tooltip="Terminal (zsh)">
+            <div class="dock-icon-wrapper dock-icon-terminal">💻</div>
+            <div class="dock-tooltip">Terminal</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="music" data-tooltip="Music">
+            <div class="dock-icon-wrapper dock-icon-music">🎵</div>
+            <div class="dock-tooltip">Music</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="minecraft" data-tooltip="Minecraft 3D">
+            <div class="dock-icon-wrapper dock-icon-minecraft">⛏️</div>
+            <div class="dock-tooltip">Minecraft 3D</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="paint" data-tooltip="Paint Studio">
+            <div class="dock-icon-wrapper dock-icon-paint">🎨</div>
+            <div class="dock-tooltip">Paint</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="contact" data-tooltip="Mail">
+            <div class="dock-icon-wrapper dock-icon-mail">✉️</div>
+            <div class="dock-tooltip">Mail</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-item" data-app="settings" data-tooltip="System Settings">
+            <div class="dock-icon-wrapper dock-icon-settings">⚙️</div>
+            <div class="dock-tooltip">System Settings</div>
+            <div class="dock-dot"></div>
+          </div>
+
+          <div class="dock-divider"></div>
+
+          <div class="dock-item" data-app="recycle" data-tooltip="Trash">
+            <div class="dock-icon-wrapper dock-icon-trash">🗑️</div>
+            <div class="dock-tooltip">Trash</div>
+            <div class="dock-dot"></div>
+          </div>
+        </nav>
+
+        <!-- Hidden Compatibility Anchors -->
+        <div id="taskbar-apps" style="display: none;"></div>
+        <button id="start-btn" style="display: none;"></button>
+        <div id="start-menu" style="display: none;"></div>
+        <button id="taskbar-room-btn" style="display: none;"></button>
+
+        <!-- macOS Spotlight Search Modal -->
+        <div id="macos-spotlight" class="spotlight-overlay hidden">
+          <div class="spotlight-card">
+            <div class="spotlight-input-row">
+              <span class="spotlight-icon">🔍</span>
+              <input type="text" id="spotlight-input" class="spotlight-input" placeholder="Spotlight Search (Search apps, skills, education)..." autocomplete="off" spellcheck="false">
+              <span class="spotlight-esc-hint">esc</span>
             </div>
-            <div class="start-item" data-app="portfolio">
-              <span class="start-item-icon">🕷️</span>
-              <span>Spider-Man Portfolio</span>
+            <div id="spotlight-results" class="spotlight-results"></div>
+          </div>
+        </div>
+
+        <!-- macOS "About This Mac" Modal -->
+        <div id="about-mac-modal" class="macos-modal-overlay hidden">
+          <div class="about-mac-window">
+            <div class="about-mac-header">
+              <div class="about-mac-controls">
+                <button class="win-btn win-btn-close" id="about-mac-close-btn" title="Close">✕</button>
+              </div>
+              <div class="about-mac-title">About This Mac</div>
             </div>
-            <div class="start-item" data-app="skills">
-              <span class="start-item-icon">🐍</span>
-              <span>Skills Matrix (Python 3 & AI)</span>
-            </div>
-            <div class="start-item" data-app="education">
-              <span class="start-item-icon">🎓</span>
-              <span>Academic Education</span>
-            </div>
-            <div class="start-item" data-app="terminal">
-              <span class="start-item-icon">💻</span>
-              <span>MS-DOS Prompt</span>
-            </div>
-            <div class="start-divider"></div>
-            <div class="start-item" data-app="music">
-              <span class="start-item-icon">🎵</span>
-              <span>Winamp Media</span>
-            </div>
-            <div class="start-item" data-app="minecraft">
-              <span class="start-item-icon">⛏️</span>
-              <span>Minecraft 3D (Craft98)</span>
-            </div>
-            <div class="start-item" data-app="paint">
-              <span class="start-item-icon">🎨</span>
-              <span>Paint Studio</span>
-            </div>
-            <div class="start-divider"></div>
-            <div class="start-item" data-app="contact">
-              <span class="start-item-icon">✉️</span>
-              <span>Contact / Mail</span>
-            </div>
-            <div class="start-item" data-app="settings">
-              <span class="start-item-icon">⚙️</span>
-              <span>Display Settings</span>
-            </div>
-            <div class="start-divider"></div>
-            <div class="start-item" id="start-menu-room-btn">
-              <span class="start-item-icon">🪑</span>
-              <span>3D Room Overview</span>
-            </div>
-            <div class="start-item" onclick="window.dispatchEvent(new CustomEvent('rebootAgamOS'))">
-              <span class="start-item-icon">🔄</span>
-              <span>Restart System...</span>
+            <div class="about-mac-content">
+              <div class="about-mac-icon"></div>
+              <h2 class="about-mac-name">AgamOS Sequoia</h2>
+              <div class="about-mac-badge">Version 15.2 (24C101)</div>
+              <div class="about-mac-info-table">
+                <div class="info-row"><span class="info-label">MacBook Pro:</span><span class="info-val">16-inch, M3 Max Architecture</span></div>
+                <div class="info-row"><span class="info-label">Runtime Engine:</span><span class="info-val">Python 3.12 & Advanced AI Prompts</span></div>
+                <div class="info-row"><span class="info-label">Memory:</span><span class="info-val">64 GB Unified LPDDR5X</span></div>
+                <div class="info-row"><span class="info-label">Developer:</span><span class="info-val">Agam Makhija</span></div>
+                <div class="info-row"><span class="info-label">Education:</span><span class="info-val">Newton School of Technology (2026–2030)</span></div>
+                <div class="info-row"><span class="info-label">Secondary:</span><span class="info-val">Prodigy Public School (2024–2026)</span></div>
+              </div>
+              <div class="about-mac-actions">
+                <button class="retro-btn btn-sm" onclick="document.getElementById('about-mac-modal').classList.add('hidden')">Done</button>
+                <button class="retro-btn btn-sm" onclick="window.windowManager.openApp('settings'); document.getElementById('about-mac-modal').classList.add('hidden');">System Settings...</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BIOS & Windows 98 Boot Overlay -->
-    <div id="boot-overlay">
-      <div id="bios-screen">
-        <div class="bios-header">
-          <div>
-            <b>AGAM BIOS v4.51PG</b><br>
-            An Alliance of Creative Code & Systems Engineering<br>
-            Copyright (C) 1998-2026, Agam Makhija
-          </div>
-          <div class="bios-energy-logo">
-            [ENERGY STAR]
-          </div>
-        </div>
-        <p>Main Processor : Intel Pentium(R) II 400MHz</p>
-        <p>Memory Testing : 131072K OK</p>
-        <p>Primary Master : AGAM-HDD 10.4GB UDMA/33</p>
-        <p>Graphics Engine : Three.js WebGL 2.0 ACG Accelerated</p>
-        <p>Audio Engine : Web Audio API 16-Bit Polyphonic Synthesizer</p>
-        <br>
-        <p>Booting AgamOS 98 from Drive C: ...</p>
-      </div>
-
-      <div id="splash-screen">
-        <div class="splash-title">AgamOS 98</div>
-        <div class="splash-subtitle">Interactive 3D Portfolio Workstation</div>
-        <div class="boot-progress-bar">
+    <!-- macOS Apple Boot Overlay -->
+    <div id="boot-overlay" class="macos-boot-overlay">
+      <div class="macos-boot-content">
+        <div class="apple-boot-logo"></div>
+        <div class="macos-boot-progress-bar">
           <div id="boot-progress-fill"></div>
         </div>
       </div>
