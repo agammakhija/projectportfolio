@@ -46,6 +46,17 @@ class WindowManager {
 
     // 4. Setup Start Menu Items
     this.setupStartMenuItems();
+
+    // 5. Global Escape key closes the active window or Start Menu
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (this.isStartOpen) {
+          this.closeStartMenu();
+        } else if (this.activeWindow) {
+          this.closeWindow(this.activeWindow);
+        }
+      }
+    });
   }
 
   initClock() {
@@ -413,7 +424,7 @@ class WindowManager {
       const maxTop = parent.clientHeight - 40;
 
       const newLeft = Math.max(-rectWidthHalf(), Math.min(maxLeft, initialX + dx));
-      const newTop = Math.max(0, Math.min(maxTop, initialY + dy));
+      const newTop = Math.max(10, Math.min(maxTop, initialY + dy));
 
       el.style.left = `${newLeft}px`;
       el.style.top = `${newTop}px`;

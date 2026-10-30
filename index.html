@@ -93,10 +93,6 @@
               <span class="icon-img">🎵</span>
               <span class="icon-label">Winamp</span>
             </div>
-            <div class="desktop-icon" data-app="minesweeper">
-              <span class="icon-img">💣</span>
-              <span class="icon-label">Minesweeper</span>
-            </div>
             <div class="desktop-icon" data-app="minecraft">
               <span class="icon-img">⛏️</span>
               <span class="icon-label">Minecraft 3D</span>
@@ -193,6 +189,7 @@
                 <input type="text" class="browser-url-input" value="https://portfolio-swart-pi-47.vercel.app/" readonly>
               </div>
               <a href="https://portfolio-swart-pi-47.vercel.app/" target="_blank" rel="noopener noreferrer" class="retro-btn btn-sm" style="text-decoration:none; color:inherit; font-weight:bold;" title="Open in external browser window">🌐 Pop Out</a>
+              <button class="retro-btn btn-sm" id="portfolio-browser-close" style="background: #991b1b; color: #ffffff; font-weight: bold; border-color: #ef4444;" title="Close this window (or press Esc)">✕ Close Window</button>
             </div>
             <div class="window-content browser-content-pane">
               <iframe id="portfolio-iframe" src="https://portfolio-swart-pi-47.vercel.app/" title="Agam Makhija Spider-Man Portfolio" allow="fullscreen; accelerometer; gyroscope"></iframe>
@@ -580,6 +577,11 @@
             <span>Start</span>
           </button>
 
+          <button id="taskbar-room-btn" class="taskbar-room-btn" title="Return to 3D Room Overview">
+            <span class="taskbar-room-icon">🪑</span>
+            <span>3D Room</span>
+          </button>
+
           <div id="taskbar-apps" class="taskbar-apps"></div>
 
           <div class="system-tray">
@@ -620,13 +622,9 @@
               <span class="start-item-icon">🎵</span>
               <span>Winamp Media</span>
             </div>
-            <div class="start-item" data-app="minesweeper">
-              <span class="start-item-icon">💣</span>
-              <span>Minesweeper</span>
-            </div>
             <div class="start-item" data-app="minecraft">
               <span class="start-item-icon">⛏️</span>
-              <span>Minecraft 3D</span>
+              <span>Minecraft 3D (Craft98)</span>
             </div>
             <div class="start-item" data-app="paint">
               <span class="start-item-icon">🎨</span>
@@ -642,6 +640,10 @@
               <span>Display Settings</span>
             </div>
             <div class="start-divider"></div>
+            <div class="start-item" id="start-menu-room-btn">
+              <span class="start-item-icon">🪑</span>
+              <span>3D Room Overview</span>
+            </div>
             <div class="start-item" onclick="window.dispatchEvent(new CustomEvent('rebootAgamOS'))">
               <span class="start-item-icon">🔄</span>
               <span>Restart System...</span>

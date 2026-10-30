@@ -58,6 +58,14 @@ html, body {
   border-radius: 9999px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* When zoomed into CRT monitor screen, hide the room HUD so it never obstructs application windows */
+.hud-header.hidden-in-monitor {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transform: translate(-50%, -100px) !important;
 }
 
 .hud-brand {

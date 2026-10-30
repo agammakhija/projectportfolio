@@ -35,7 +35,9 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: clip !important;
+  overflow-anchor: none !important;
+  overscroll-behavior: none !important;
   background-color: #008080; /* Classic Windows Teal */
 }
 
@@ -45,7 +47,10 @@
   flex: 1;
   width: 100%;
   height: calc(100% - 36px);
-  overflow: hidden;
+  overflow: clip !important;
+  overflow-anchor: none !important;
+  overscroll-behavior: none !important;
+  contain: paint !important;
   background-color: #008080;
   background-size: cover;
   background-position: center;
@@ -131,6 +136,8 @@
   box-shadow: 2px 3px 12px rgba(0, 0, 0, 0.45), inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
   min-width: 320px;
   min-height: 220px;
+  max-height: 100%;
+  overflow: hidden !important;
   pointer-events: auto;
   opacity: 1;
   transition: transform 0.15s ease, opacity 0.15s ease;
@@ -162,6 +169,12 @@
   font-weight: 700;
   cursor: grab;
   user-select: none;
+  position: sticky !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 100 !important;
+  flex-shrink: 0 !important;
 }
 
 .window.active .window-titlebar {
@@ -311,6 +324,41 @@
   font-weight: 700;
   color: #000000;
   cursor: pointer;
+}
+
+/* Quick 3D Room Switch Button in Taskbar */
+.taskbar-room-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 28px;
+  padding: 2px 9px;
+  margin-left: 4px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: 2px solid #ffffff;
+  border-right: 2px solid #000000;
+  border-bottom: 2px solid #000000;
+  box-shadow: inset 1px 1px 0 #dfdfdf, inset -1px -1px 0 #808080;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: #0369a1;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.taskbar-room-btn:hover {
+  background: #0284c7;
+  color: #ffffff;
+}
+
+.taskbar-room-btn:active {
+  border-top: 2px solid #000000;
+  border-left: 2px solid #000000;
+  border-right: 2px solid #ffffff;
+  border-bottom: 2px solid #ffffff;
+  padding: 3px 8px 1px 10px;
 }
 
 .start-button:active, .start-button.active {

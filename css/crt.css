@@ -91,13 +91,13 @@
   filter: sepia(1) saturate(3) hue-rotate(350deg) brightness(1.05);
 }
 
-/* Exit to Room Pill Button */
+/* Exit to Room Pill Button - Positioned in top-left so it NEVER collides with window close buttons */
 .crt-exit-pill {
   position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 3050;
-  background: rgba(15, 23, 42, 0.75);
+  top: 8px;
+  left: 14px;
+  z-index: 80;
+  background: rgba(15, 23, 42, 0.85);
   color: #f1f5f9;
   border: 1px solid rgba(255, 255, 255, 0.25);
   padding: 4px 12px;

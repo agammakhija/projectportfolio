@@ -190,13 +190,68 @@ function populateEducationApp() {
 
 function setupPortfolioBrowser() {
   const reloadBtn = document.getElementById("portfolio-browser-reload");
+  const closeBtn = document.getElementById("portfolio-browser-close");
   const iframe = document.getElementById("portfolio-iframe");
+  const winPortfolio = document.getElementById("win-portfolio");
+
   if (reloadBtn && iframe) {
     reloadBtn.addEventListener("click", () => {
       iframe.src = window.PORTFOLIO_DATA.profile.spidermanPortfolioUrl || "https://portfolio-swart-pi-47.vercel.app/";
       if (window.audioEngine) window.audioEngine.playClick();
     });
   }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => {
+      if (window.windowManager) {
+        window.windowManager.closeWindow("portfolio");
+      }
+    });
+  }
+
+  // Prevent iframe scrollIntoView transitions from pushing parent desktop / CRT container off-screen
+  const desktop = document.getElementById("desktop");
+  const crtFrame = document.getElementById("crt-screen-frame");
+  const crtWrapper = document.getElementById("crt-screen-wrapper");
+
+  const preventUnwantedScroll = () => {
+    if (desktop && (desktop.scrollTop !== 0 || desktop.scrollLeft !== 0)) {
+      desktop.scrollTop = 0;
+      desktop.scrollLeft = 0;
+    }
+    if (crtFrame && (crtFrame.scrollTop !== 0 || crtFrame.scrollLeft !== 0)) {
+      crtFrame.scrollTop = 0;
+      crtFrame.scrollLeft = 0;
+    }
+    if (crtWrapper && crtWrapper.scrollTop !== 0) {
+      crtWrapper.scrollTop = 0;
+    }
+    if (window.scrollY !== 0 || window.scrollX !== 0) {
+      window.scrollTo(0, 0);
+    }
+    if (winPortfolio && winPortfolio.style.display !== "none") {
+      const topVal = parseInt(winPortfolio.style.top, 10);
+      if (!winPortfolio.classList.contains("maximized")) {
+        if (!isNaN(topVal) && topVal < 15) {
+          winPortfolio.style.top = "15px";
+        }
+      } else {
+        if (!isNaN(topVal) && topVal < 0) {
+          winPortfolio.style.top = "0px";
+        }
+      }
+    }
+  };
+
+  window.addEventListener("scroll", preventUnwantedScroll, { passive: true });
+  if (desktop) desktop.addEventListener("scroll", preventUnwantedScroll, { passive: true });
+  if (crtFrame) crtFrame.addEventListener("scroll", preventUnwantedScroll, { passive: true });
+
+  setInterval(() => {
+    if (winPortfolio && winPortfolio.style.display !== "none") {
+      preventUnwantedScroll();
+    }
+  }, 100);
 }
 
 function populateContactApp() {
@@ -313,6 +368,9 @@ function setupHudControls() {
   const soundToggleBtn = document.getElementById("hud-btn-sound");
   const crtToggleBtn = document.getElementById("hud-btn-crt");
   const crtWrapper = document.getElementById("crt-screen-wrapper");
+  const hudHeader = document.querySelector(".hud-header");
+  const taskbarRoomBtn = document.getElementById("taskbar-room-btn");
+  const startMenuRoomBtn = document.getElementById("start-menu-room-btn");
 
   let currentView = "desk"; // "desk" or "monitor"
 
@@ -332,6 +390,11 @@ function setupHudControls() {
     if (crtWrapper) {
       crtWrapper.classList.toggle("fullscreen-mode", mode === "monitor");
     }
+
+    // Hide top overview header bar when in monitor mode so it never blocks window titlebar buttons
+    if (hudHeader) {
+      hudHeader.classList.toggle("hidden-in-monitor", mode === "monitor");
+    }
   };
 
   if (viewToggleBtn) {
@@ -344,6 +407,21 @@ function setupHudControls() {
   const crtExitBtn = document.getElementById("crt-exit-btn");
   if (crtExitBtn) {
     crtExitBtn.addEventListener("click", () => {
+      setView("desk");
+      if (window.audioEngine) window.audioEngine.playClick();
+    });
+  }
+
+  if (taskbarRoomBtn) {
+    taskbarRoomBtn.addEventListener("click", () => {
+      setView("desk");
+      if (window.audioEngine) window.audioEngine.playClick();
+    });
+  }
+
+  if (startMenuRoomBtn) {
+    startMenuRoomBtn.addEventListener("click", () => {
+      if (window.windowManager) window.windowManager.closeStartMenu();
       setView("desk");
       if (window.audioEngine) window.audioEngine.playClick();
     });
