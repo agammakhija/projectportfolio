@@ -334,113 +334,126 @@ class RetroScene {
     this.scene.add(panel);
   }
 
-  // --- CRT Monitor (Beige 90s Tube Monitor) ---
+  // --- Apple Mac (iMac All-In-One Workstation) ---
 
   buildCrtMonitor() {
     const monitorGroup = new THREE.Group();
     monitorGroup.name = "crtMonitor";
 
-    // Beige plastic material
-    const beigeMat = new THREE.MeshStandardMaterial({
-      color: 0xd8ceb8,
-      roughness: 0.55,
-      metalness: 0.05
+    // Apple Silver Aluminum Materials
+    const aluminumMat = new THREE.MeshStandardMaterial({
+      color: 0xdde3ec,
+      metalness: 0.85,
+      roughness: 0.22
     });
-    const darkGrayMat = new THREE.MeshStandardMaterial({
-      color: 0x282828,
-      roughness: 0.8
+    const darkGlassMat = new THREE.MeshStandardMaterial({
+      color: 0x050505,
+      metalness: 0.4,
+      roughness: 0.08
+    });
+    const appleLogoMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      metalness: 0.9,
+      roughness: 0.15
     });
 
-    // 1. Monitor Base / Swivel Stand
+    // 1. Apple L-Stand (Precision-milled aluminum)
     const baseStand = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.24, 0.28, 0.05, 24),
-      beigeMat
+      new THREE.BoxGeometry(0.34, 0.012, 0.28),
+      aluminumMat
     );
-    baseStand.position.set(0, 1.025, 0.05);
+    baseStand.position.set(0, 1.006, 0.06);
     baseStand.castShadow = true;
     baseStand.receiveShadow = true;
     monitorGroup.add(baseStand);
 
     const standNeck = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.12, 0.1, 16),
-      darkGrayMat
+      new THREE.BoxGeometry(0.18, 0.42, 0.016),
+      aluminumMat
     );
-    standNeck.position.set(0, 1.1, 0.05);
+    standNeck.position.set(0, 1.20, 0.02);
+    standNeck.rotation.x = -0.15;
+    standNeck.castShadow = true;
     monitorGroup.add(standNeck);
 
-    // 2. Main CRT Housing (Tapered trapezoidal box)
-    const housingFront = new THREE.Mesh(
-      new THREE.BoxGeometry(1.15, 0.88, 0.45),
-      beigeMat
+    // Cable passthrough hole cutout on stand
+    const cutout = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.04, 0.02, 24),
+      new THREE.MeshBasicMaterial({ color: 0x1e293b })
     );
-    housingFront.position.set(0, 1.52, 0.08);
-    housingFront.castShadow = true;
-    housingFront.receiveShadow = true;
-    monitorGroup.add(housingFront);
+    cutout.rotateX(Math.PI / 2);
+    cutout.position.set(0, 1.15, 0.02);
+    monitorGroup.add(cutout);
 
-    // Back Cathode Ray Tube bulge (funnel shape)
-    const backHousing = new THREE.Mesh(
-      new THREE.ConeGeometry(0.52, 0.5, 4),
-      beigeMat
+    // 2. iMac Unibody Display Enclosure (Ultra-slim aluminum profile)
+    const displayBody = new THREE.Mesh(
+      new THREE.BoxGeometry(1.24, 0.78, 0.024),
+      aluminumMat
     );
-    backHousing.rotation.x = -Math.PI / 2;
-    backHousing.rotation.y = Math.PI / 4;
-    backHousing.position.set(0, 1.52, -0.35);
-    backHousing.castShadow = true;
-    monitorGroup.add(backHousing);
+    displayBody.position.set(0, 1.54, 0.22);
+    displayBody.rotation.x = -0.03;
+    displayBody.castShadow = true;
+    displayBody.receiveShadow = true;
+    monitorGroup.add(displayBody);
 
-    // Vent louvers on the back/top
-    const ventGeo = new THREE.BoxGeometry(0.7, 0.02, 0.25);
-    const ventMat = new THREE.MeshStandardMaterial({ color: 0x8a7f6c, roughness: 0.9 });
-    const vents = new THREE.Mesh(ventGeo, ventMat);
-    vents.position.set(0, 1.97, 0.0);
-    monitorGroup.add(vents);
-
-    // 3. Screen Bezel Recess
-    const bezelRecess = new THREE.Mesh(
-      new THREE.BoxGeometry(0.96, 0.72, 0.04),
-      darkGrayMat
+    // Front Glass Bezel (Edge-to-edge glossy dark border)
+    const glassBezel = new THREE.Mesh(
+      new THREE.BoxGeometry(1.22, 0.64, 0.005),
+      darkGlassMat
     );
-    bezelRecess.position.set(0, 1.54, 0.31);
-    monitorGroup.add(bezelRecess);
+    glassBezel.position.set(0, 1.59, 0.235);
+    glassBezel.rotation.x = -0.03;
+    monitorGroup.add(glassBezel);
 
-    // 4. CRT Curved Glass Screen with Dynamic Canvas Texture
+    // Front Aluminum Chin
+    const chin = new THREE.Mesh(
+      new THREE.BoxGeometry(1.24, 0.12, 0.006),
+      aluminumMat
+    );
+    chin.position.set(0, 1.21, 0.235);
+    chin.rotation.x = -0.03;
+    monitorGroup.add(chin);
+
+    // Polished Apple Logo on Chin
+    const chinLogo = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.022, 0.022, 0.004, 24),
+      appleLogoMat
+    );
+    chinLogo.rotateX(Math.PI / 2);
+    chinLogo.position.set(0, 1.21, 0.24);
+    monitorGroup.add(chinLogo);
+
+    // FaceTime HD Camera Lens (Top bezel center)
+    const cameraLens = new THREE.Mesh(
+      new THREE.SphereGeometry(0.005, 12, 12),
+      new THREE.MeshBasicMaterial({ color: 0x0284c7 })
+    );
+    cameraLens.position.set(0, 1.93, 0.24);
+    monitorGroup.add(cameraLens);
+
+    // Large Polished Apple Logo on Rear of Mac
+    const backLogo = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.07, 0.07, 0.004, 32),
+      appleLogoMat
+    );
+    backLogo.rotateX(Math.PI / 2);
+    backLogo.position.set(0, 1.54, 0.205);
+    monitorGroup.add(backLogo);
+
+    // 3. Active Retina Display Plane with Dynamic macOS Texture
     this.createCrtScreenTexture();
-    const screenGeo = new THREE.PlaneGeometry(0.92, 0.68);
+    const screenGeo = new THREE.PlaneGeometry(1.16, 0.58);
     const screenMat = new THREE.MeshBasicMaterial({
       map: this.screenTexture,
       toneMapped: false
     });
     this.crtScreenMesh = new THREE.Mesh(screenGeo, screenMat);
-    this.crtScreenMesh.position.set(0, 1.54, 0.335);
+    this.crtScreenMesh.position.set(0, 1.59, 0.24);
+    this.crtScreenMesh.rotation.x = -0.03;
     this.crtScreenMesh.name = "crtScreen";
     monitorGroup.add(this.crtScreenMesh);
 
-    // 5. Monitor Control Panel (Bottom Bezel)
-    // Brand Badge "AGAM 98"
-    const badgeGeo = new THREE.BoxGeometry(0.12, 0.03, 0.01);
-    const badgeMat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.5 });
-    const badge = new THREE.Mesh(badgeGeo, badgeMat);
-    badge.position.set(-0.35, 1.13, 0.315);
-    monitorGroup.add(badge);
-
-    // Power Button
-    const powerBtnGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.015, 16);
-    powerBtnGeo.rotateX(Math.PI / 2);
-    const powerBtnMat = new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.5 });
-    const powerBtn = new THREE.Mesh(powerBtnGeo, powerBtnMat);
-    powerBtn.position.set(0.42, 1.13, 0.315);
-    powerBtn.name = "monitorPowerButton";
-    monitorGroup.add(powerBtn);
-
-    // Glowing Power LED
-    const ledGeo = new THREE.SphereGeometry(0.008, 12, 12);
-    const ledMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
-    const powerLed = new THREE.Mesh(ledGeo, ledMat);
-    powerLed.position.set(0.38, 1.13, 0.315);
-    monitorGroup.add(powerLed);
-
-    // Interactive high-res sticky note on the monitor bezel
+    // 4. Interactive high-res sticky note pinned to Mac bezel
     const noteCanvas = document.createElement("canvas");
     noteCanvas.width = 512;
     noteCanvas.height = 512;
@@ -493,15 +506,15 @@ class RetroScene {
     nctx.font = "bold 23px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
     nctx.fillStyle = "#0f172a";
     nctx.fillText("• Click screen to enter AgamOS", 45, 160);
-    nctx.fillText("• Spider-Man portfolio inside 🕷️", 45, 204);
+    nctx.fillText("• Spider-Man portfolio in Safari 🕷️", 45, 204);
     nctx.fillText("• Play Minecraft 3D voxel world ⛏️", 45, 248);
     nctx.fillText("• Python 3 & AI Prompt Specialist 🐍", 45, 292);
     nctx.fillText("• Terminal commands: 'agam skills'", 45, 336);
-    nctx.fillText("• Winamp plays Spider-Man tracks 🎵", 45, 380);
+    nctx.fillText("• Spider-Man music & sound track 🎵", 45, 380);
 
     nctx.fillStyle = "#7c3aed";
     nctx.font = "bold 26px 'Comic Sans MS', 'Chalkboard SE', cursive, sans-serif";
-    nctx.fillText("✨ Agam Makhija — 1998", 120, 460);
+    nctx.fillText("✨ Agam Makhija — macOS", 120, 460);
 
     const noteTex = new THREE.CanvasTexture(noteCanvas);
     noteTex.minFilter = THREE.LinearFilter;
@@ -516,32 +529,30 @@ class RetroScene {
       polygonOffsetUnits: -2
     });
 
-    // Main sticky note
+    // Main sticky note pinned to top-left of Mac
     const stickyNote = new THREE.Mesh(
       new THREE.PlaneGeometry(0.26, 0.24),
       noteMat
     );
-    // Positioned prominently on top-left of monitor bezel, clearly in front of screen
-    stickyNote.position.set(-0.44, 1.88, 0.348);
-    stickyNote.rotation.z = -0.06;
-    stickyNote.rotation.y = 0.03;
+    stickyNote.position.set(-0.48, 1.88, 0.248);
+    stickyNote.rotation.z = -0.05;
+    stickyNote.rotation.y = 0.02;
     stickyNote.name = "stickyNote";
     monitorGroup.add(stickyNote);
 
-    // Subtle drop shadow behind sticky note for depth
+    // Drop shadow behind sticky note
     const shadowMat = new THREE.MeshBasicMaterial({
       color: 0x000000,
       transparent: true,
       opacity: 0.35
     });
     const noteShadow = new THREE.Mesh(new THREE.PlaneGeometry(0.26, 0.24), shadowMat);
-    noteShadow.position.set(-0.435, 1.875, 0.342);
-    noteShadow.rotation.z = -0.06;
+    noteShadow.position.set(-0.475, 1.875, 0.242);
+    noteShadow.rotation.z = -0.05;
     monitorGroup.add(noteShadow);
 
     this.scene.add(monitorGroup);
     this.interactiveObjects.push(this.crtScreenMesh);
-    this.interactiveObjects.push(powerBtn);
     this.interactiveObjects.push(stickyNote);
 
     // Resident Evil inspection references & state
@@ -550,12 +561,12 @@ class RetroScene {
     this.isStickyNoteHovered = false;
     this.noteZoomProgress = 0;
 
-    // Resting pinned state on monitor bezel
-    this.stickyBasePos = new THREE.Vector3(-0.44, 1.88, 0.348);
-    this.stickyBaseRot = new THREE.Vector3(0, 0.03, -0.06);
+    // Resting pinned state on Mac bezel
+    this.stickyBasePos = new THREE.Vector3(-0.48, 1.88, 0.248);
+    this.stickyBaseRot = new THREE.Vector3(0, 0.02, -0.05);
     this.stickyBaseScale = new THREE.Vector3(1.0, 1.0, 1.0);
 
-    // Resident Evil Close-up Inspect state (Centered right in front of camera)
+    // Resident Evil Close-up Inspect state
     this.stickyInspectPos = new THREE.Vector3(0, 1.58, 2.12);
     this.stickyInspectRot = new THREE.Vector3(0.12, 0, -0.015);
     this.stickyInspectScale = new THREE.Vector3(2.85, 2.85, 2.85);
@@ -563,12 +574,12 @@ class RetroScene {
     this.inspectOverlayEl = document.getElementById("sticky-inspect-overlay");
   }
 
-  // --- Dynamic CRT Screen Texture Generator ---
+  // --- Dynamic macOS Screen Texture Generator ---
 
   createCrtScreenTexture() {
     this.screenCanvas = document.createElement("canvas");
     this.screenCanvas.width = 512;
-    this.screenCanvas.height = 384;
+    this.screenCanvas.height = 288; // 16:9 widescreen Retina ratio
     this.screenCtx = this.screenCanvas.getContext("2d");
 
     this.renderScreenFrame(0);
@@ -581,260 +592,242 @@ class RetroScene {
   renderScreenFrame(time) {
     const ctx = this.screenCtx;
     const w = 512;
-    const h = 384;
+    const h = 288;
 
-    // Classic Windows 95/98 Teal Desktop
-    ctx.fillStyle = "#008080";
+    const drawRoundRect = (x, y, rw, rh, rad) => {
+      if (ctx.roundRect) {
+        ctx.beginPath();
+        ctx.roundRect(x, y, rw, rh, rad);
+      } else {
+        ctx.beginPath();
+        ctx.rect(x, y, rw, rh);
+      }
+    };
+
+    // macOS Sequoia Twilight Gradient Wallpaper
+    const bgGrad = ctx.createLinearGradient(0, 0, w, h);
+    bgGrad.addColorStop(0, "#1e1b4b");
+    bgGrad.addColorStop(0.3, "#312e81");
+    bgGrad.addColorStop(0.65, "#4338ca");
+    bgGrad.addColorStop(0.85, "#6366f1");
+    bgGrad.addColorStop(1, "#ec4899");
+    ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, w, h);
 
-    // Desktop Icons
-    const icons = [
-      { name: "About Me", x: 28, y: 30, color: "#38bdf8" },
-      { name: "Portfolio", x: 28, y: 110, color: "#ef4444" },
-      { name: "Skills", x: 28, y: 190, color: "#22c55e" },
-      { name: "Education", x: 28, y: 270, color: "#fbbf24" }
-    ];
-
-    icons.forEach(ic => {
-      // Icon square
-      ctx.fillStyle = ic.color;
-      ctx.fillRect(ic.x, ic.y, 34, 34);
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 1;
-      ctx.strokeRect(ic.x, ic.y, 34, 34);
-
-      // Label
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 11px sans-serif";
-      ctx.fillText(ic.name, ic.x - 4, ic.y + 48);
-    });
-
-    // Open Window: "AgamOS v1.0"
-    const wx = 120;
-    const wy = 50;
-    const ww = 350;
-    const wh = 240;
-
-    // Window shadow & body
-    ctx.fillStyle = "#c0c0c0";
-    ctx.fillRect(wx, wy, ww, wh);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2;
-    ctx.strokeRect(wx, wy, ww, wh);
-
-    // Titlebar
-    const titleGrad = ctx.createLinearGradient(wx, wy, wx + ww, wy);
-    titleGrad.addColorStop(0, "#000080");
-    titleGrad.addColorStop(1, "#1084d0");
-    ctx.fillStyle = titleGrad;
-    ctx.fillRect(wx + 3, wy + 3, ww - 6, 22);
+    // Top Apple Menu Bar
+    ctx.fillStyle = "rgba(20, 24, 33, 0.85)";
+    ctx.fillRect(0, 0, w, 22);
 
     ctx.fillStyle = "#ffffff";
     ctx.font = "bold 12px sans-serif";
-    ctx.fillText("👋 Welcome to Agam Makhija's Portfolio", wx + 10, wy + 18);
+    ctx.fillText("", 10, 15);
 
-    // Inner document
-    ctx.fillStyle = "#ffffff";
-    ctx.fillRect(wx + 10, wy + 32, ww - 20, wh - 42);
+    ctx.font = "bold 10px sans-serif";
+    ctx.fillText("Finder", 28, 15);
 
-    ctx.fillStyle = "#1e293b";
-    ctx.font = "bold 14px sans-serif";
-    ctx.fillText("Agam Makhija — Python 3 & AI Specialist", wx + 20, wy + 58);
-    ctx.font = "12px sans-serif";
-    ctx.fillStyle = "#0284c7";
-    ctx.fillText("Newton School of Technology • B.Tech CSE (AI/ML)", wx + 20, wy + 78);
-    ctx.fillStyle = "#475569";
-    ctx.fillText("• Click screen to zoom in & enter AgamOS", wx + 20, wy + 110);
-    ctx.fillText("• Spider-Man portfolio embedded inside computer", wx + 20, wy + 130);
-    ctx.fillText("• Python 3 scripting & AI prompt engineering", wx + 20, wy + 150);
+    ctx.font = "10px sans-serif";
+    ctx.fillStyle = "#e2e8f0";
+    ctx.fillText("File   Edit   View   Go   Window   Help", 75, 15);
 
-    // Button
-    ctx.fillStyle = "#0284c7";
-    ctx.fillRect(wx + 20, wy + 175, 150, 30);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 12px sans-serif";
-    ctx.fillText("ENTER AGAMOS >>", wx + 32, wy + 195);
-
-    // Taskbar at the bottom
-    ctx.fillStyle = "#c0c0c0";
-    ctx.fillRect(0, h - 28, w, 28);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, h - 28, w, 28);
-
-    // Start Button
-    ctx.fillStyle = "#d4d4d8";
-    ctx.fillRect(4, h - 24, 60, 20);
-    ctx.fillStyle = "#000000";
-    ctx.font = "bold 11px sans-serif";
-    ctx.fillText("▶ Start", 14, h - 10);
-
-    // System Tray Clock
     const now = new Date();
     const timeStr = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-    ctx.fillStyle = "#333333";
-    ctx.fillText(timeStr, w - 55, h - 10);
+    ctx.fillText(timeStr, w - 50, 15);
 
-    // CRT Scanlines
-    ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
-    for (let y = 0; y < h; y += 4) {
-      ctx.fillRect(0, y, w, 2);
-    }
+    // Open macOS Frosted Glass Window
+    const wx = 80;
+    const wy = 42;
+    const ww = 352;
+    const wh = 180;
+
+    // Window shadow & body
+    ctx.fillStyle = "rgba(24, 28, 38, 0.94)";
+    drawRoundRect(wx, wy, ww, wh, 10);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.15)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Titlebar
+    ctx.fillStyle = "rgba(36, 40, 54, 0.96)";
+    drawRoundRect(wx, wy, ww, 26, [10, 10, 0, 0]);
+    ctx.fill();
+
+    // Traffic Lights (🔴 🟡 🟢)
+    ctx.fillStyle = "#ff5f56";
+    ctx.beginPath();
+    ctx.arc(wx + 14, wy + 13, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#ffbd2e";
+    ctx.beginPath();
+    ctx.arc(wx + 28, wy + 13, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.fillStyle = "#27c93f";
+    ctx.beginPath();
+    ctx.arc(wx + 42, wy + 13, 5, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Centered Title
+    ctx.fillStyle = "#f1f5f9";
+    ctx.font = "bold 11px sans-serif";
+    ctx.fillText("About Agam Makhija — Portfolio", wx + 105, wy + 17);
+
+    // Window Inner Content
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 13px sans-serif";
+    ctx.fillText("Agam Makhija — Python 3 & AI Specialist", wx + 20, wy + 54);
+
+    ctx.fillStyle = "#38bdf8";
+    ctx.font = "11px sans-serif";
+    ctx.fillText("Newton School of Technology • B.Tech CSE (AI/ML)", wx + 20, wy + 72);
+
+    ctx.fillStyle = "#cbd5e1";
+    ctx.font = "10px sans-serif";
+    ctx.fillText("• Click screen to enter macOS desktop environment", wx + 20, wy + 96);
+    ctx.fillText("• Spider-Man portfolio inside Safari browser", wx + 20, wy + 112);
+    ctx.fillText("• Interactive 3D voxel sandbox (Minecraft Craft98)", wx + 20, wy + 128);
+
+    // Call to Action Button
+    ctx.fillStyle = "#0284c7";
+    drawRoundRect(wx + 20, wy + 142, 140, 24, 6);
+    ctx.fill();
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 10px sans-serif";
+    ctx.fillText("ENTER AGAMOS >>", wx + 32, wy + 158);
+
+    // Bottom macOS Dock (Floating frosted shelf)
+    const dockW = 260;
+    const dockH = 28;
+    const dockX = (w - dockW) / 2;
+    const dockY = h - dockH - 6;
+
+    ctx.fillStyle = "rgba(255, 255, 255, 0.22)";
+    drawRoundRect(dockX, dockY, dockW, dockH, 10);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.35)";
+    ctx.stroke();
+
+    // Colorful Dock Icons
+    const dockColors = ["#0284c7", "#ef4444", "#10b981", "#6366f1", "#1e293b", "#f43f5e", "#15803d", "#ea580c", "#38bdf8", "#64748b", "#334155"];
+    dockColors.forEach((color, idx) => {
+      const ix = dockX + 12 + idx * 22;
+      ctx.fillStyle = color;
+      drawRoundRect(ix, dockY + 4, 18, 18, 4);
+      ctx.fill();
+    });
   }
 
-  // --- PC Tower (Beige Mid-Tower) ---
+  // --- Mac Studio (Compact Aluminum Desktop Powerhouse) ---
 
   buildPcTower() {
     const pcGroup = new THREE.Group();
-    pcGroup.name = "pcTower";
+    pcGroup.name = "macStudio";
 
-    const beigeMat = new THREE.MeshStandardMaterial({
-      color: 0xdfd6c3,
-      roughness: 0.6,
-      metalness: 0.05
-    });
-    const driveMat = new THREE.MeshStandardMaterial({
-      color: 0xcec4b0,
-      roughness: 0.7
+    const aluminumMat = new THREE.MeshStandardMaterial({
+      color: 0xdde3ec,
+      metalness: 0.85,
+      roughness: 0.22
     });
 
-    // Tower Body
-    const towerBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.42, 0.82, 0.75),
-      beigeMat
+    // Mac Studio Body (Precision-milled aluminum cube)
+    const studioBody = new THREE.Mesh(
+      new THREE.BoxGeometry(0.24, 0.13, 0.24),
+      aluminumMat
     );
-    towerBody.position.set(1.15, 0.5, -0.05);
-    towerBody.castShadow = true;
-    towerBody.receiveShadow = true;
-    pcGroup.add(towerBody);
+    studioBody.position.set(0.72, 1.065, 0.12);
+    studioBody.castShadow = true;
+    studioBody.receiveShadow = true;
+    pcGroup.add(studioBody);
 
-    // CD-ROM Drive (5.25")
-    const cdDrive = new THREE.Mesh(
-      new THREE.BoxGeometry(0.34, 0.07, 0.02),
-      driveMat
+    // Top Apple Logo
+    const topLogo = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.035, 0.035, 0.003, 24),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.1 })
     );
-    cdDrive.position.set(1.15, 0.78, 0.33);
-    pcGroup.add(cdDrive);
+    topLogo.position.set(0.72, 1.132, 0.12);
+    pcGroup.add(topLogo);
 
-    // 3.5" Floppy Drive
-    const floppyDrive = new THREE.Mesh(
-      new THREE.BoxGeometry(0.24, 0.045, 0.02),
-      driveMat
-    );
-    floppyDrive.position.set(1.15, 0.68, 0.33);
-    pcGroup.add(floppyDrive);
+    // Front Dual Thunderbolt USB-C Ports
+    [-0.03, 0.03].forEach(xOff => {
+      const port = new THREE.Mesh(
+        new THREE.BoxGeometry(0.015, 0.006, 0.005),
+        new THREE.MeshBasicMaterial({ color: 0x0f172a })
+      );
+      port.position.set(0.72 + xOff, 1.04, 0.242);
+      pcGroup.add(port);
+    });
 
-    // Floppy slot recess
-    const slot = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 0.008, 0.025),
-      new THREE.MeshBasicMaterial({ color: 0x111111 })
-    );
-    slot.position.set(1.15, 0.68, 0.335);
-    pcGroup.add(slot);
-
-    // Power & Reset Buttons
-    const powerBtn = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.018, 0.018, 0.02, 16),
-      new THREE.MeshStandardMaterial({ color: 0x555555 })
-    );
-    powerBtn.rotateX(Math.PI / 2);
-    powerBtn.position.set(1.04, 0.52, 0.33);
-    powerBtn.name = "pcPowerButton";
-    pcGroup.add(powerBtn);
-
-    // Power LED (Green)
+    // Status Power LED (Sleek Apple white dot)
     const powerLed = new THREE.Mesh(
-      new THREE.SphereGeometry(0.007, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0x22c55e })
+      new THREE.SphereGeometry(0.004, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffffff })
     );
-    powerLed.position.set(1.04, 0.47, 0.33);
+    powerLed.position.set(0.81, 1.04, 0.242);
+    powerLed.name = "pcPowerButton";
     pcGroup.add(powerLed);
 
-    // HDD Activity LED (Amber / Blinks in animation loop)
-    this.hddLed = new THREE.Mesh(
-      new THREE.SphereGeometry(0.007, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xf59e0b })
-    );
-    this.hddLed.position.set(1.07, 0.47, 0.33);
-    pcGroup.add(this.hddLed);
-
     this.scene.add(pcGroup);
-    this.interactiveObjects.push(powerBtn);
+    this.interactiveObjects.push(powerLed);
   }
 
-  // --- Keyboard, Mouse & Peripherals ---
+  // --- Apple Magic Keyboard, Magic Mouse & Studio Speakers ---
 
   buildPeripherals() {
     const periGroup = new THREE.Group();
 
-    // 1. Mechanical Keyboard
+    const aluminumMat = new THREE.MeshStandardMaterial({
+      color: 0xdde3ec,
+      metalness: 0.85,
+      roughness: 0.22
+    });
+
+    // 1. Apple Magic Keyboard (Ultra-slim aluminum wedge)
     const kbBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.78, 0.035, 0.28),
-      new THREE.MeshStandardMaterial({ color: 0xd6cdba, roughness: 0.6 })
+      new THREE.BoxGeometry(0.68, 0.014, 0.20),
+      aluminumMat
     );
-    kbBody.position.set(0, 1.018, 0.52);
-    kbBody.rotation.x = 0.04;
+    kbBody.position.set(0, 1.008, 0.54);
+    kbBody.rotation.x = 0.02;
     kbBody.castShadow = true;
     periGroup.add(kbBody);
 
-    // Keycaps Tray
+    // Chiclet Keycaps Tray (Crisp White Apple Keys)
     const keysTray = new THREE.Mesh(
-      new THREE.BoxGeometry(0.72, 0.02, 0.22),
-      new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.7 })
+      new THREE.BoxGeometry(0.64, 0.008, 0.17),
+      new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.4 })
     );
-    keysTray.position.set(0, 1.035, 0.52);
-    keysTray.rotation.x = 0.04;
+    keysTray.position.set(0, 1.018, 0.54);
+    keysTray.rotation.x = 0.02;
     periGroup.add(keysTray);
 
-    // 2. Mousepad
-    const pad = new THREE.Mesh(
-      new THREE.BoxGeometry(0.32, 0.005, 0.36),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.9 })
-    );
-    pad.position.set(0.62, 1.003, 0.52);
-    pad.receiveShadow = true;
-    periGroup.add(pad);
-
-    // 3. Ergonomic Ball Mouse
+    // 2. Apple Magic Mouse (Glossy white continuous surface, wireless)
     const mouseBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.09, 0.04, 0.15),
-      new THREE.MeshStandardMaterial({ color: 0xd6cdba, roughness: 0.6 })
+      new THREE.BoxGeometry(0.08, 0.024, 0.14),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.08, metalness: 0.1 })
     );
-    mouseBody.position.set(0.62, 1.025, 0.52);
+    mouseBody.position.set(0.52, 1.012, 0.54);
     mouseBody.castShadow = true;
     mouseBody.name = "deskMouse";
     periGroup.add(mouseBody);
 
-    // Mouse cord (Curving tube)
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(0.62, 1.01, 0.44),
-      new THREE.Vector3(0.68, 1.01, 0.2),
-      new THREE.Vector3(0.95, 1.01, 0.0)
-    ]);
-    const cordGeo = new THREE.TubeGeometry(curve, 20, 0.003, 8, false);
-    const cordMat = new THREE.MeshStandardMaterial({ color: 0x1e1e1e, roughness: 0.8 });
-    const cord = new THREE.Mesh(cordGeo, cordMat);
-    periGroup.add(cord);
-
-    // 4. Desktop Stereo Speakers
-    [-0.72, 0.72].forEach(x => {
-      const spk = new THREE.Mesh(
-        new THREE.BoxGeometry(0.16, 0.35, 0.18),
-        new THREE.MeshStandardMaterial({ color: 0xdfd6c3, roughness: 0.6 })
+    // 3. Apple HomePod Mini Speakers (Space Gray Spheres)
+    [-0.68, 0.68].forEach(x => {
+      const homePod = new THREE.Mesh(
+        new THREE.SphereGeometry(0.075, 24, 24),
+        new THREE.MeshStandardMaterial({ color: 0x1e2430, roughness: 0.85 })
       );
-      spk.position.set(x, 1.18, 0.18);
-      spk.rotation.y = x > 0 ? -0.2 : 0.2;
-      spk.castShadow = true;
-      periGroup.add(spk);
+      homePod.position.set(x, 1.075, 0.2);
+      homePod.castShadow = true;
+      periGroup.add(homePod);
 
-      // Speaker fabric grille
-      const grille = new THREE.Mesh(
-        new THREE.BoxGeometry(0.13, 0.28, 0.01),
-        new THREE.MeshStandardMaterial({ color: 0x27272a, roughness: 0.95 })
+      // Top Touch Surface
+      const touchTop = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.03, 0.03, 0.004, 24),
+        new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.5 })
       );
-      grille.position.set(x, 1.18, 0.275);
-      grille.rotation.y = x > 0 ? -0.2 : 0.2;
-      periGroup.add(grille);
+      touchTop.position.set(x, 1.15, 0.2);
+      periGroup.add(touchTop);
     });
 
     this.scene.add(periGroup);

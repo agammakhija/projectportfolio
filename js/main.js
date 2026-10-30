@@ -307,45 +307,48 @@ function populateRecycleBin() {
 
 // --- BIOS & Boot Sequence ---
 
-function setupBootSequence() {
+function playAppleBootTransition(onComplete) {
   const bootOverlay = document.getElementById("boot-overlay");
   const progressFill = document.getElementById("boot-progress-fill");
+  if (!bootOverlay) {
+    if (onComplete) onComplete();
+    return;
+  }
 
-  const startBoot = () => {
-    if (!bootOverlay) return;
+  bootOverlay.style.display = "flex";
+  bootOverlay.style.pointerEvents = "all";
+  bootOverlay.style.opacity = "1";
+  if (progressFill) progressFill.style.width = "0%";
 
-    bootOverlay.style.display = "flex";
-    bootOverlay.style.opacity = "1";
-    if (progressFill) progressFill.style.width = "0%";
+  // Play Apple startup chime
+  if (window.audioEngine) {
+    window.audioEngine.playStartupChime();
+  }
 
-    // Play iconic Apple startup chime
-    if (window.audioEngine) {
-      window.audioEngine.playStartupChime();
-    }
+  let progress = 0;
+  const progTimer = setInterval(() => {
+    progress += 20;
+    if (progressFill) progressFill.style.width = `${progress}%`;
 
-    let progress = 0;
-    const progTimer = setInterval(() => {
-      progress += 12;
-      if (progressFill) progressFill.style.width = `${progress}%`;
+    if (progress >= 100) {
+      clearInterval(progTimer);
+      if (onComplete) onComplete();
 
-      if (progress >= 100) {
-        clearInterval(progTimer);
+      setTimeout(() => {
+        bootOverlay.style.opacity = "0";
+        bootOverlay.style.pointerEvents = "none";
         setTimeout(() => {
-          bootOverlay.style.opacity = "0";
-          setTimeout(() => {
-            bootOverlay.style.display = "none";
-          }, 600);
-        }, 300);
-      }
-    }, 90);
-  };
+          bootOverlay.style.display = "none";
+        }, 500);
+      }, 250);
+    }
+  }, 85);
+}
 
-  // Run on initial load
-  startBoot();
-
-  // Listen for reboot requests
+function setupBootSequence() {
+  // Listen for system reboot requests (from  Menu > Restart)
   window.addEventListener("rebootAgamOS", () => {
-    startBoot();
+    playAppleBootTransition();
   });
 }
 
@@ -378,9 +381,17 @@ function setupHudControls() {
         : `<span>🪑 Desk Overview (3D Room)</span>`;
     }
 
-    // When in monitor mode, elevate CRT wrapper for crisp high-density interaction
-    if (crtWrapper) {
-      crtWrapper.classList.toggle("fullscreen-mode", mode === "monitor");
+    if (mode === "monitor") {
+      // Play Apple loading screen when entering the desktop!
+      playAppleBootTransition(() => {
+        if (crtWrapper) {
+          crtWrapper.classList.add("fullscreen-mode");
+        }
+      });
+    } else {
+      if (crtWrapper) {
+        crtWrapper.classList.remove("fullscreen-mode");
+      }
     }
 
     // Hide top overview header bar when in monitor mode so it never blocks window titlebar buttons

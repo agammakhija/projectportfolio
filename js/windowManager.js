@@ -34,10 +34,13 @@ class WindowManager {
     // 5. Setup "About This Mac" Modal
     this.setupAboutThisMac();
 
-    // 6. Setup Desktop Icons
+    // 6. Setup Launchpad / Applications Popup
+    this.setupLaunchpad();
+
+    // 7. Setup Desktop Icons
     this.setupDesktopIcons();
 
-    // 7. Setup Keyboard Shortcuts (Esc, Cmd+Space)
+    // 8. Setup Keyboard Shortcuts (Esc, Cmd+Space)
     this.setupKeyboardShortcuts();
   }
 
@@ -58,6 +61,8 @@ class WindowManager {
     const dockItems = document.querySelectorAll(".dock-item");
     dockItems.forEach(item => {
       const appId = item.getAttribute("data-app");
+      if (!appId) return; // Special items like Launchpad handled separately
+
       item.addEventListener("click", () => {
         // Trigger iconic macOS bounce
         item.classList.add("dock-bounce");
@@ -281,6 +286,45 @@ class WindowManager {
     }
   }
 
+  setupLaunchpad() {
+    const btn = document.getElementById("dock-launchpad-btn");
+    const overlay = document.getElementById("macos-launchpad");
+    const closeBtn = document.getElementById("launchpad-close-btn");
+
+    if (!overlay) return;
+
+    if (btn) {
+      btn.addEventListener("click", () => {
+        btn.classList.add("dock-bounce");
+        setTimeout(() => btn.classList.remove("dock-bounce"), 600);
+        overlay.classList.toggle("hidden");
+        if (window.audioEngine) window.audioEngine.playClick();
+      });
+    }
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        overlay.classList.add("hidden");
+      });
+    }
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        overlay.classList.add("hidden");
+      }
+    });
+
+    overlay.querySelectorAll(".launchpad-app").forEach(item => {
+      item.addEventListener("click", () => {
+        const appId = item.getAttribute("data-app");
+        overlay.classList.add("hidden");
+        if (appId) {
+          this.openApp(appId);
+        }
+      });
+    });
+  }
+
   setupDesktopIcons() {
     const icons = document.querySelectorAll(".desktop-icon");
     icons.forEach(icon => {
@@ -337,6 +381,12 @@ class WindowManager {
         const aboutMac = document.getElementById("about-mac-modal");
         if (aboutMac && !aboutMac.classList.contains("hidden")) {
           aboutMac.classList.add("hidden");
+          return;
+        }
+
+        const launchpad = document.getElementById("macos-launchpad");
+        if (launchpad && !launchpad.classList.contains("hidden")) {
+          launchpad.classList.add("hidden");
           return;
         }
 

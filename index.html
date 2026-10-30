@@ -134,55 +134,8 @@
           </div>
         </div>
 
-        <!-- Desktop Environment -->
+        <!-- Desktop Environment (Clean Minimalist macOS Wallpaper) -->
         <main id="desktop" class="desktop wp-sequoia">
-          <!-- Desktop Icons -->
-          <div class="desktop-icons-container">
-            <div class="desktop-icon" data-app="about">
-              <span class="icon-img">👤</span>
-              <span class="icon-label">About Me</span>
-            </div>
-            <div class="desktop-icon" data-app="portfolio">
-              <span class="icon-img">🕷️</span>
-              <span class="icon-label">Portfolio</span>
-            </div>
-            <div class="desktop-icon" data-app="skills">
-              <span class="icon-img">🐍</span>
-              <span class="icon-label">Skills</span>
-            </div>
-            <div class="desktop-icon" data-app="education">
-              <span class="icon-img">🎓</span>
-              <span class="icon-label">Education</span>
-            </div>
-            <div class="desktop-icon" data-app="terminal">
-              <span class="icon-img">💻</span>
-              <span class="icon-label">Terminal</span>
-            </div>
-            <div class="desktop-icon" data-app="music">
-              <span class="icon-img">🎵</span>
-              <span class="icon-label">Winamp</span>
-            </div>
-            <div class="desktop-icon" data-app="minecraft">
-              <span class="icon-img">⛏️</span>
-              <span class="icon-label">Minecraft 3D</span>
-            </div>
-            <div class="desktop-icon" data-app="paint">
-              <span class="icon-img">🎨</span>
-              <span class="icon-label">Paint</span>
-            </div>
-            <div class="desktop-icon" data-app="contact">
-              <span class="icon-img">✉️</span>
-              <span class="icon-label">Contact Me</span>
-            </div>
-            <div class="desktop-icon" data-app="settings">
-              <span class="icon-img">⚙️</span>
-              <span class="icon-label">Settings</span>
-            </div>
-            <div class="desktop-icon" data-app="recycle">
-              <span class="icon-img">🗑️</span>
-              <span class="icon-label">Recycle Bin</span>
-            </div>
-          </div>
 
           <!-- Application Window 1: About Me -->
           <div id="win-about" class="window hidden" data-title="About Me — Agam Makhija" data-icon="👤" style="width: 620px; height: 440px;">
@@ -707,12 +660,74 @@
 
           <div class="dock-divider"></div>
 
+          <div class="dock-item" id="dock-launchpad-btn" data-tooltip="Applications / Launchpad">
+            <div class="dock-icon-wrapper dock-icon-launchpad">🚀</div>
+            <div class="dock-tooltip">Applications</div>
+            <div class="dock-dot"></div>
+          </div>
+
           <div class="dock-item" data-app="recycle" data-tooltip="Trash">
             <div class="dock-icon-wrapper dock-icon-trash">🗑️</div>
             <div class="dock-tooltip">Trash</div>
             <div class="dock-dot"></div>
           </div>
         </nav>
+
+        <!-- macOS Launchpad Modal -->
+        <div id="macos-launchpad" class="launchpad-overlay hidden">
+          <div class="launchpad-container">
+            <div class="launchpad-header">
+              <span class="launchpad-title">Applications</span>
+              <button class="win-btn win-btn-close" id="launchpad-close-btn" title="Close (Esc)">✕</button>
+            </div>
+            <div class="launchpad-grid">
+              <div class="launchpad-app" data-app="about">
+                <div class="launchpad-icon dock-icon-finder">👤</div>
+                <span class="launchpad-label">About Me</span>
+              </div>
+              <div class="launchpad-app" data-app="portfolio">
+                <div class="launchpad-icon dock-icon-safari">🕷️</div>
+                <span class="launchpad-label">Spider-Man Safari</span>
+              </div>
+              <div class="launchpad-app" data-app="skills">
+                <div class="launchpad-icon dock-icon-skills">🐍</div>
+                <span class="launchpad-label">Skills Matrix</span>
+              </div>
+              <div class="launchpad-app" data-app="education">
+                <div class="launchpad-icon dock-icon-education">🎓</div>
+                <span class="launchpad-label">Education</span>
+              </div>
+              <div class="launchpad-app" data-app="terminal">
+                <div class="launchpad-icon dock-icon-terminal">💻</div>
+                <span class="launchpad-label">Terminal</span>
+              </div>
+              <div class="launchpad-app" data-app="music">
+                <div class="launchpad-icon dock-icon-music">🎵</div>
+                <span class="launchpad-label">Music</span>
+              </div>
+              <div class="launchpad-app" data-app="minecraft">
+                <div class="launchpad-icon dock-icon-minecraft">⛏️</div>
+                <span class="launchpad-label">Minecraft 3D</span>
+              </div>
+              <div class="launchpad-app" data-app="paint">
+                <div class="launchpad-icon dock-icon-paint">🎨</div>
+                <span class="launchpad-label">Paint Studio</span>
+              </div>
+              <div class="launchpad-app" data-app="contact">
+                <div class="launchpad-icon dock-icon-mail">✉️</div>
+                <span class="launchpad-label">Mail</span>
+              </div>
+              <div class="launchpad-app" data-app="settings">
+                <div class="launchpad-icon dock-icon-settings">⚙️</div>
+                <span class="launchpad-label">System Settings</span>
+              </div>
+              <div class="launchpad-app" data-app="recycle">
+                <div class="launchpad-icon dock-icon-trash">🗑️</div>
+                <span class="launchpad-label">Trash</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- Hidden Compatibility Anchors -->
         <div id="taskbar-apps" style="display: none;"></div>
