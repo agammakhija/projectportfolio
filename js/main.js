@@ -356,16 +356,12 @@ function setupBootSequence() {
 
 function setupHudControls() {
   const viewToggleBtn = document.getElementById("hud-btn-view");
-  const lampToggleBtn = document.getElementById("hud-btn-lamp");
-  const soundToggleBtn = document.getElementById("hud-btn-sound");
-  const crtToggleBtn = document.getElementById("hud-btn-crt");
   const crtWrapper = document.getElementById("crt-screen-wrapper");
   const hudHeader = document.querySelector(".hud-header");
   const taskbarRoomBtn = document.getElementById("taskbar-room-btn");
   const startMenuRoomBtn = document.getElementById("start-menu-room-btn");
   const menubarRoomBtn = document.getElementById("menubar-room-btn");
   const menubarSoundBtn = document.getElementById("menubar-sound-btn");
-  const menubarCrtBtn = document.getElementById("menubar-crt-btn");
 
   let currentView = "desk"; // "desk" or "monitor"
 
@@ -373,6 +369,9 @@ function setupHudControls() {
     currentView = mode;
     if (window.retroScene) {
       window.retroScene.setCameraView(mode);
+      if (mode === "monitor" && !window.retroScene.isLampOn) {
+        window.retroScene.setLamp(true);
+      }
     }
 
     if (viewToggleBtn) {
@@ -407,6 +406,18 @@ function setupHudControls() {
     });
   }
 
+  // Click on desktop to turn lamp on
+  const desktopEl = document.getElementById("desktop");
+  if (desktopEl) {
+    desktopEl.addEventListener("click", (e) => {
+      if (e.target === desktopEl || e.target.id === "desktop") {
+        if (window.retroScene && !window.retroScene.isLampOn) {
+          window.retroScene.setLamp(true);
+        }
+      }
+    });
+  }
+
   const crtExitBtn = document.getElementById("crt-exit-btn");
   if (crtExitBtn) {
     crtExitBtn.addEventListener("click", () => {
@@ -422,28 +433,12 @@ function setupHudControls() {
     });
   }
 
+  // Sound toggle strictly inside desktop (Menu Bar)
   if (menubarSoundBtn) {
     menubarSoundBtn.addEventListener("click", () => {
       if (window.audioEngine) {
         const isMuted = window.audioEngine.toggleMute();
         menubarSoundBtn.textContent = isMuted ? "🔇" : "🔊";
-        if (soundToggleBtn) {
-          soundToggleBtn.innerHTML = isMuted ? `<span>🔇 Sound: OFF</span>` : `<span>🔊 Sound: ON</span>`;
-          soundToggleBtn.classList.toggle("muted", isMuted);
-        }
-      }
-    });
-  }
-
-  if (menubarCrtBtn) {
-    menubarCrtBtn.addEventListener("click", () => {
-      if (window.crtEffects) {
-        const newState = !window.crtEffects.isScanlinesEnabled;
-        window.crtEffects.toggleScanlines(newState);
-        if (crtToggleBtn) {
-          crtToggleBtn.innerHTML = newState ? `<span>📺 CRT FX: ON</span>` : `<span>💻 CRT FX: OFF</span>`;
-        }
-        if (window.audioEngine) window.audioEngine.playClick();
       }
     });
   }
@@ -467,38 +462,5 @@ function setupHudControls() {
   window.addEventListener("enterAgamOS", () => {
     setView("monitor");
   });
-
-  // Desk Lamp Toggle
-  if (lampToggleBtn) {
-    lampToggleBtn.addEventListener("click", () => {
-      if (window.retroScene) {
-        const isOn = window.retroScene.toggleLamp();
-        lampToggleBtn.classList.toggle("active", isOn);
-      }
-    });
-  }
-
-  // Sound Mute Toggle
-  if (soundToggleBtn) {
-    soundToggleBtn.addEventListener("click", () => {
-      if (window.audioEngine) {
-        const isMuted = window.audioEngine.toggleMute();
-        soundToggleBtn.innerHTML = isMuted ? `<span>🔇 Sound: OFF</span>` : `<span>🔊 Sound: ON</span>`;
-        soundToggleBtn.classList.toggle("muted", isMuted);
-      }
-    });
-  }
-
-  // CRT Scanlines Toggle
-  if (crtToggleBtn) {
-    crtToggleBtn.addEventListener("click", () => {
-      if (window.crtEffects) {
-        const newState = !window.crtEffects.isScanlinesEnabled;
-        window.crtEffects.toggleScanlines(newState);
-        crtToggleBtn.innerHTML = newState ? `<span>📺 CRT FX: ON</span>` : `<span>💻 CRT FX: OFF</span>`;
-        if (window.audioEngine) window.audioEngine.playClick();
-      }
-    });
-  }
 }
 

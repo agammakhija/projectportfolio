@@ -69,8 +69,8 @@ class RetroScene {
 
     // 1. Scene
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x0a0c14);
-    this.scene.fog = new THREE.FogExp2(0x0a0c14, 0.08);
+    this.scene.background = new THREE.Color(0x0f0b1e);
+    this.scene.fog = new THREE.FogExp2(0x0f0b1e, 0.065);
 
     // 2. Camera
     const aspect = window.innerWidth / window.innerHeight;
@@ -210,12 +210,15 @@ class RetroScene {
   // --- Lighting Setup ---
 
   setupLighting() {
-    // 1. Soft Ambient Light
-    this.ambientLight = new THREE.AmbientLight(0x404860, 0.7);
+    // 1. Low Ambience Purple Lighting
+    this.ambientLight = new THREE.AmbientLight(0x2e1065, 0.45);
     this.scene.add(this.ambientLight);
 
-    // 2. Room Window Moonlight / Key Light
-    this.dirLight = new THREE.DirectionalLight(0x7090b0, 0.45);
+    const ambientPurple = new THREE.AmbientLight(0x581c87, 0.35);
+    this.scene.add(ambientPurple);
+
+    // 2. Room Window Moonlight / Key Light (Soft violet-tinted beam)
+    this.dirLight = new THREE.DirectionalLight(0x8b5cf6, 0.28);
     this.dirLight.position.set(-5, 6, 4);
     this.dirLight.castShadow = true;
     this.dirLight.shadow.mapSize.width = 1024;
@@ -225,7 +228,20 @@ class RetroScene {
     this.dirLight.shadow.bias = -0.0005;
     this.scene.add(this.dirLight);
 
-    // 3. Desk Lamp Spotlight (Warm vintage beam)
+    // 3. Background Wall Low Ambient Purple Wash Lights
+    const bgPurpleCenter = new THREE.PointLight(0x9333ea, 0.85, 8.0, 1.4);
+    bgPurpleCenter.position.set(0, 2.3, -1.3);
+    this.scene.add(bgPurpleCenter);
+
+    const bgPurpleLeft = new THREE.PointLight(0x6b21a8, 0.55, 6.0, 1.5);
+    bgPurpleLeft.position.set(-2.2, 2.0, -1.1);
+    this.scene.add(bgPurpleLeft);
+
+    const bgPurpleRight = new THREE.PointLight(0x7e22ce, 0.55, 6.0, 1.5);
+    bgPurpleRight.position.set(2.2, 2.0, -1.1);
+    this.scene.add(bgPurpleRight);
+
+    // 4. Desk Lamp Spotlight (Warm vintage beam, ON by default)
     this.lampLight = new THREE.SpotLight(0xffecc4, 2.2, 5.5, Math.PI / 4, 0.4, 1.2);
     this.lampLight.position.set(-1.1, 2.05, 0.25);
     this.lampLight.target.position.set(-0.2, 0.8, 0.4);
@@ -236,8 +252,8 @@ class RetroScene {
     this.scene.add(this.lampLight);
     this.scene.add(this.lampLight.target);
 
-    // 4. CRT Screen Glow (Dynamic point light)
-    this.screenLight = new THREE.PointLight(0x5eead4, 0.6, 2.0, 1.5);
+    // 5. CRT / Mac Screen Glow (Dynamic point light)
+    this.screenLight = new THREE.PointLight(0x6366f1, 0.65, 2.0, 1.5);
     this.screenLight.position.set(0, 1.35, 0.5);
     this.scene.add(this.screenLight);
   }
@@ -301,7 +317,9 @@ class RetroScene {
     deskTop.position.set(0, 0.96, 0.1);
     deskTop.receiveShadow = true;
     deskTop.castShadow = true;
+    deskTop.name = "deskSurface";
     this.scene.add(deskTop);
+    this.interactiveObjects.push(deskTop);
 
     // Metal Legs
     const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.96, 16);
@@ -858,6 +876,7 @@ class RetroScene {
     );
     base.position.set(-1.15, 1.02, 0.15);
     base.castShadow = true;
+    base.name = "deskLamp";
     lampGroup.add(base);
 
     // Switch on base
@@ -866,7 +885,7 @@ class RetroScene {
       brassMat
     );
     lampSwitch.position.set(-1.1, 1.045, 0.15);
-    lampSwitch.name = "lampSwitch";
+    lampSwitch.name = "deskLamp";
     lampGroup.add(lampSwitch);
 
     // Lower Arm
@@ -877,6 +896,7 @@ class RetroScene {
     arm1.position.set(-1.15, 1.34, 0.15);
     arm1.rotation.z = -0.35;
     arm1.castShadow = true;
+    arm1.name = "deskLamp";
     lampGroup.add(arm1);
 
     // Elbow Joint
@@ -885,6 +905,7 @@ class RetroScene {
       brassMat
     );
     elbow.position.set(-1.05, 1.62, 0.15);
+    elbow.name = "deskLamp";
     lampGroup.add(elbow);
 
     // Upper Arm
@@ -895,6 +916,7 @@ class RetroScene {
     arm2.position.set(-0.92, 1.84, 0.2);
     arm2.rotation.z = 0.55;
     arm2.castShadow = true;
+    arm2.name = "deskLamp";
     lampGroup.add(arm2);
 
     // Lamp Shade (Cone)
@@ -906,7 +928,7 @@ class RetroScene {
     shade.rotation.z = 0.95;
     shade.rotation.x = 0.2;
     shade.castShadow = true;
-    shade.name = "lampShade";
+    shade.name = "deskLamp";
     lampGroup.add(shade);
 
     // Glowing Bulb inside shade
@@ -915,11 +937,11 @@ class RetroScene {
       new THREE.MeshBasicMaterial({ color: 0xfff4d6 })
     );
     this.lampBulb.position.set(-0.76, 2.0, 0.25);
+    this.lampBulb.name = "deskLamp";
     lampGroup.add(this.lampBulb);
 
     this.scene.add(lampGroup);
-    this.interactiveObjects.push(lampSwitch);
-    this.interactiveObjects.push(shade);
+    this.interactiveObjects.push(base, lampSwitch, arm1, elbow, arm2, shade, this.lampBulb);
   }
 
   // --- Desk Props (Coffee Mug, Floppy Disks) ---
@@ -968,8 +990,9 @@ class RetroScene {
 
   // --- User Interactions & Camera Transitions ---
 
-  toggleLamp() {
-    this.isLampOn = !this.isLampOn;
+  setLamp(isOn) {
+    if (this.isLampOn === isOn) return this.isLampOn;
+    this.isLampOn = isOn;
     if (this.lampLight) {
       this.lampLight.intensity = this.isLampOn ? 2.2 : 0;
     }
@@ -979,7 +1002,16 @@ class RetroScene {
     if (window.audioEngine) {
       window.audioEngine.playLampClick();
     }
+    const hudLamp = document.getElementById("hud-btn-lamp");
+    if (hudLamp) {
+      hudLamp.classList.toggle("active", this.isLampOn);
+      hudLamp.innerHTML = this.isLampOn ? "<span>💡 Lamp: ON</span>" : "<span>💡 Lamp: OFF</span>";
+    }
     return this.isLampOn;
+  }
+
+  toggleLamp() {
+    return this.setLamp(!this.isLampOn);
   }
 
   setCameraView(mode) {
@@ -1079,13 +1111,16 @@ class RetroScene {
       const name = hit ? hit.name : "";
 
       if (name === "crtScreen" || name === "crtMonitor" || name === "stickyNote") {
+        this.setLamp(true); // Clicking onto the computer desktop turns lamp on
         if (this.cameraMode === "desk") {
           this.isStickyNoteHovered = false;
           this.showInspectOverlay(false);
           window.dispatchEvent(new CustomEvent("enterAgamOS"));
         }
-      } else if (name === "lampSwitch" || name === "lampShade" || name === "deskLamp") {
-        this.toggleLamp();
+      } else if (name === "deskLamp" || name === "lampSwitch" || name === "lampShade" || name === "lampBulb") {
+        this.setLamp(false); // Click at the lamp to close/turn it off
+      } else if (name === "deskSurface" || name === "deskTop") {
+        this.setLamp(true); // Click onto the desktop to turn it on
       } else if (name === "coffeeMug") {
         if (window.audioEngine) window.audioEngine.playBeep(520, 0.08);
       } else if (name === "floppyDisk") {
