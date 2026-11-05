@@ -254,259 +254,220 @@ html, body {
 }
 
 /* ==========================================================================
-   Interactive Contextual Suggestion Bar HUD
-   macOS Dynamic Island / Acrylic Glass aesthetic
+   3D Interactive Room Hotspots & Animated Indicator Arrows
+   Only displayed in 3D Room overview — Never in the laptop/desktop view
    ========================================================================== */
 
-#interactive-guide-bar {
+.room-hotspots-container {
   position: absolute;
-  z-index: 2000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 25;
+  overflow: hidden;
+  user-select: none;
+  transition: opacity 0.3s ease;
+}
+
+.room-hotspot {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.hotspot-wrapper {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translate(-50%, -100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.hotspot-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.90);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.7), 0 0 18px rgba(56, 189, 248, 0.28);
+  padding: 5px 12px;
+  border-radius: 9999px;
+  cursor: pointer;
   pointer-events: auto;
   user-select: none;
-  transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              left 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.3s ease;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.22s ease,
+              border-color 0.22s ease,
+              background 0.22s ease;
 }
 
-#interactive-guide-bar.mode-desk {
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+.hotspot-card:hover {
+  transform: translateY(-3px) scale(1.05);
+  border-color: rgba(56, 189, 248, 0.75);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.55);
+  background: rgba(30, 41, 59, 0.96);
 }
 
-#interactive-guide-bar.mode-monitor {
-  bottom: 78px;
-  left: 50%;
-  transform: translateX(-50%);
+.hotspot-card:active {
+  transform: translateY(0) scale(0.98);
 }
 
-#interactive-guide-bar.minimized.mode-desk {
-  bottom: 24px;
-  left: auto;
-  right: 24px;
-  transform: none;
-}
-
-#interactive-guide-bar.minimized.mode-monitor {
-  bottom: 78px;
-  left: auto;
-  right: 24px;
-  transform: none;
-}
-
-.guide-bar-expanded {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  box-shadow: 0 14px 40px -6px rgba(0, 0, 0, 0.6), 0 0 22px rgba(147, 51, 234, 0.24);
-  padding: 6px 12px 6px 12px;
-  border-radius: 9999px;
-  max-width: min(840px, calc(100vw - 32px));
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.guide-badge-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
+.hotspot-icon {
+  font-size: 15px;
+  line-height: 1;
   flex-shrink: 0;
 }
 
-.guide-pulse-dot {
+.hotspot-info {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  line-height: 1.15;
+}
+
+.hotspot-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+}
+
+.hotspot-desc {
+  font-size: 9.5px;
+  font-weight: 500;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.hotspot-arrow {
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: -2px;
+  margin-bottom: -3px;
+  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.75));
+  animation: arrowBounce 1.8s ease-in-out infinite;
+}
+
+@keyframes arrowBounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(4px);
+  }
+}
+
+.hotspot-pin-anchor {
+  position: relative;
+  width: 12px;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hotspot-pin-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #10b981;
-  box-shadow: 0 0 8px #10b981;
-  animation: guidePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.8);
 }
 
-@keyframes guidePulse {
-  0%, 100% {
+.hotspot-pin-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(56, 189, 248, 0.8);
+  animation: pinPulse 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+@keyframes pinPulse {
+  0% {
+    transform: scale(0.5);
     opacity: 1;
-    transform: scale(1);
   }
-  50% {
-    opacity: 0.45;
-    transform: scale(0.85);
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
   }
 }
 
-.guide-badge-icon {
+/* Room Hints Icon Toggle Button (Bottom-Right of 3D Room) */
+.room-hints-toggle-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 50;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 18px rgba(147, 51, 234, 0.25);
+  padding: 7px 15px;
+  border-radius: 9999px;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  pointer-events: auto;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.room-hints-toggle-btn:hover {
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.65), 0 0 22px rgba(56, 189, 248, 0.45);
+  background: rgba(30, 41, 59, 0.95);
+}
+
+.room-hints-toggle-btn:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.room-hints-toggle-btn.active {
+  border-color: rgba(56, 189, 248, 0.55);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 18px rgba(56, 189, 248, 0.35);
+}
+
+.room-hints-toggle-btn.active .hints-icon {
+  filter: drop-shadow(0 0 6px #facc15);
+}
+
+.room-hints-toggle-btn:not(.active) {
+  opacity: 0.65;
+  color: #94a3b8;
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.hints-icon {
   font-size: 14px;
   line-height: 1;
 }
 
-.guide-badge-tag {
-  font-size: 10.5px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #e2e8f0;
-  padding: 2px 7px;
-  border-radius: 5px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  white-space: nowrap;
-}
-
-.guide-text-content {
-  display: flex;
-  align-items: center;
-  min-width: 0;
-  flex: 1;
-  padding: 0 4px;
-}
-
-.guide-text {
-  font-size: 12.5px;
-  font-weight: 500;
-  color: #f8fafc;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.guide-actions {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.guide-action-pill {
-  background: linear-gradient(135deg, #0284c7, #2563eb);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 9999px;
-  padding: 4px 12px;
-  font-size: 11.5px;
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
-}
-
-.guide-action-pill:hover {
-  transform: translateY(-1px) scale(1.03);
-  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.6), 0 0 10px rgba(56, 189, 248, 0.5);
-  filter: brightness(1.12);
-}
-
-.guide-action-pill:active {
-  transform: translateY(0) scale(0.98);
-}
-
-.guide-nav-group {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-  padding-left: 4px;
-  border-left: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.guide-icon-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #cbd5e1;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1;
-  transition: all 0.15s ease;
-}
-
-.guide-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-.guide-minimize-btn {
-  font-size: 10px;
-  margin-left: 2px;
-}
-
-.guide-minimize-btn:hover {
-  background: rgba(239, 68, 68, 0.35);
-  border-color: rgba(239, 68, 68, 0.6);
-  color: #fca5a5;
-}
-
-/* Collapsed Pill Trigger */
-.guide-pill-trigger {
-  background: rgba(15, 23, 42, 0.9);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.5), 0 0 16px rgba(147, 51, 234, 0.3);
-  border-radius: 9999px;
-  padding: 6px 14px;
-  color: #f8fafc;
-  font-size: 12px;
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.guide-pill-trigger:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.6), 0 0 20px rgba(147, 51, 234, 0.45);
-  background: rgba(30, 41, 59, 0.95);
-}
-
-.guide-pill-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #38bdf8;
-  box-shadow: 0 0 6px #38bdf8;
-}
-
-.guide-pill-icon {
-  font-size: 13px;
-  line-height: 1;
-}
-
-.guide-pill-label {
+.hints-label {
   font-size: 11.5px;
   letter-spacing: 0.3px;
 }
 
-/* Responsive adjustments */
-@media (max-width: 680px) {
-  .guide-bar-expanded {
-    max-width: calc(100vw - 24px);
-    gap: 6px;
-    padding: 5px 10px;
-  }
-  .guide-text {
-    font-size: 11.5px;
-    max-width: 220px;
-  }
-  .guide-nav-group {
-    display: none;
-  }
-  .guide-badge-tag {
-    display: none;
-  }
+/* Never show in laptop / desktop view */
+#crt-screen-wrapper.fullscreen-mode ~ #room-hotspots-container,
+#crt-screen-wrapper.fullscreen-mode ~ #room-hints-toggle-btn {
+  display: none !important;
 }
 

@@ -1306,11 +1306,6 @@ class RetroScene {
       document.body.style.cursor = "default";
       this.hoveredObject = null;
     }
-
-    // Dynamic Suggestion Bar Real-Time Hover Update
-    if (window.guideBar && this.cameraMode === "desk") {
-      window.guideBar.updateHoverTarget(hoveredTargetName);
-    }
   }
 
   onSceneClick(e) {
@@ -1318,8 +1313,12 @@ class RetroScene {
     // Only handle 3D scene clicks in desk overview mode
     if (this.cameraMode !== "desk") return;
 
-    // Ignore clicks if clicking inside the suggestion bar or interactive HUD overlays
-    if (e.target && e.target.closest && (e.target.closest("#interactive-guide-bar") || e.target.closest("#sticky-inspect-overlay .inspect-hud-box"))) {
+    // Ignore clicks if clicking inside room hotspots or toggle button or inspect overlay
+    if (e.target && e.target.closest && (
+      e.target.closest("#room-hotspots-container") ||
+      e.target.closest("#room-hints-toggle-btn") ||
+      e.target.closest("#sticky-inspect-overlay .inspect-hud-box")
+    )) {
       return;
     }
 
@@ -1443,7 +1442,12 @@ class RetroScene {
 
     this.camera.lookAt(this.currentLookAt);
 
-    // 5. Render Scene
+    // 5. Update 3D interactive room hotspot pin positions
+    if (window.roomHotspots && this.cameraMode === "desk") {
+      window.roomHotspots.updatePositions(this.camera);
+    }
+
+    // 6. Render Scene
     this.renderer.render(this.scene, this.camera);
   }
 }
