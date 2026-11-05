@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   window.minesweeperApp = new MinesweeperApp("win-minesweeper");
   window.paintApp = new PaintApp("win-paint");
   window.minecraftApp = new MinecraftApp("win-minecraft");
+  window.guideBar = new GuideBar();
 
   // 2. Populate Apps with Dynamic Data
   populateAboutApp();
@@ -368,6 +369,10 @@ function setupHudControls() {
       if (mode === "monitor" && !window.retroScene.isLampOn) {
         window.retroScene.setLamp(true);
       }
+    }
+
+    if (window.guideBar) {
+      window.guideBar.setMode(mode);
     }
 
     if (mode === "monitor") {

@@ -764,6 +764,32 @@
         </div>
       </div>
     </div>
+    <!-- Interactive Contextual Suggestion Bar HUD (Dynamic Guidance & Features) -->
+    <div id="interactive-guide-bar" class="guide-bar mode-desk" role="region" aria-label="Interactive Website Guide">
+      <div class="guide-bar-expanded">
+        <div class="guide-badge-group">
+          <span class="guide-pulse-dot" aria-hidden="true"></span>
+          <span class="guide-badge-icon" id="guide-badge-icon">🖥️</span>
+          <span class="guide-badge-tag" id="guide-badge-tag">AgamOS</span>
+        </div>
+        <div class="guide-text-content">
+          <span class="guide-text" id="guide-text">Click the Mac screen or keyboard to boot into AgamOS desktop</span>
+        </div>
+        <div class="guide-actions" id="guide-actions">
+          <button class="guide-action-pill" id="guide-action-btn" type="button">Boot Mac </button>
+        </div>
+        <div class="guide-nav-group">
+          <button class="guide-icon-btn" id="guide-prev-btn" title="Previous tip" aria-label="Previous tip" type="button">‹</button>
+          <button class="guide-icon-btn" id="guide-next-btn" title="Next tip" aria-label="Next tip" type="button">›</button>
+          <button class="guide-icon-btn guide-minimize-btn" id="guide-minimize-btn" title="Minimize guide" aria-label="Minimize guide" type="button">✕</button>
+        </div>
+      </div>
+      <button id="guide-pill-trigger" class="guide-pill-trigger hidden" title="Show Interactive Hints Guide" type="button">
+        <span class="guide-pill-dot"></span>
+        <span class="guide-pill-icon">💡</span>
+        <span class="guide-pill-label">Guide & Tips</span>
+      </button>
+    </div>
   </div>
 
   <!-- JavaScript Modules -->
@@ -777,6 +803,7 @@
   <script src="js/paint.js"></script>
   <script src="js/minecraft.js"></script>
   <script src="js/crtEffects.js"></script>
+  <script src="js/guideBar.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

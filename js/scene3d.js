@@ -110,6 +110,9 @@ class RetroScene {
     window.addEventListener("resize", () => this.onWindowResize());
     window.addEventListener("mousemove", (e) => this.onMouseMove(e));
     window.addEventListener("click", (e) => this.onSceneClick(e));
+    if (this.renderer && this.renderer.domElement) {
+      this.renderer.domElement.addEventListener("click", (e) => this.onSceneClick(e));
+    }
 
     // 7. Start Animation Loop
     this.animate();
@@ -578,17 +581,16 @@ class RetroScene {
     monitorGroup.add(noteShadow);
 
     this.scene.add(monitorGroup);
-    this.interactiveObjects.push(
-      this.crtScreenMesh,
-      glassBezel,
-      displayBody,
-      chin,
-      chinLogo,
-      cameraLens,
-      baseStand,
-      standNeck,
-      stickyNote
-    );
+    monitorGroup.traverse((child) => {
+      if (child.isMesh && child !== noteShadow) {
+        if (child !== stickyNote) {
+          child.name = "crtScreen";
+        }
+        if (!this.interactiveObjects.includes(child)) {
+          this.interactiveObjects.push(child);
+        }
+      }
+    });
 
     // Resident Evil inspection references & state
     this.stickyNote = stickyNote;
@@ -1268,12 +1270,16 @@ class RetroScene {
     const intersects = this.raycaster.intersectObjects(this.interactiveObjects, true);
 
     let isNoteHit = false;
+    let hoveredTargetName = null;
+
     if (this.cameraMode === "desk" && intersects.length > 0) {
       let hit = intersects[0].object;
       while (hit && !hit.name && hit.parent) {
         hit = hit.parent;
       }
-      if (hit && hit.name === "stickyNote") {
+      const name = hit ? hit.name : "";
+      hoveredTargetName = name;
+      if (name === "stickyNote") {
         isNoteHit = true;
       }
     }
@@ -1293,22 +1299,41 @@ class RetroScene {
       }
     }
 
-    if (intersects.length > 0) {
+    if (this.cameraMode === "desk" && intersects.length > 0) {
       document.body.style.cursor = "pointer";
       this.hoveredObject = intersects[0].object;
     } else {
       document.body.style.cursor = "default";
       this.hoveredObject = null;
     }
+
+    // Dynamic Suggestion Bar Real-Time Hover Update
+    if (window.guideBar && this.cameraMode === "desk") {
+      window.guideBar.updateHoverTarget(hoveredTargetName);
+    }
   }
 
   onSceneClick(e) {
-    if (!this.mouse || !this.camera || !this.raycaster) return;
-    if (e.target.closest(".hud-btn") || e.target.closest(".window") || e.target.closest(".taskbar")) {
+    if (!this.camera || !this.raycaster) return;
+    // Only handle 3D scene clicks in desk overview mode
+    if (this.cameraMode !== "desk") return;
+
+    // Ignore clicks if clicking inside the suggestion bar or interactive HUD overlays
+    if (e.target && e.target.closest && (e.target.closest("#interactive-guide-bar") || e.target.closest("#sticky-inspect-overlay .inspect-hud-box"))) {
       return;
     }
 
-    this.raycaster.setFromCamera(this.mouse, this.camera);
+    // Debounce rapid click triggers
+    const now = performance.now();
+    if (this.lastClickTime && (now - this.lastClickTime < 120)) return;
+    this.lastClickTime = now;
+
+    // Compute raycaster coordinates directly from click event for 100% precision
+    const clickMouse = new THREE.Vector2(
+      (e.clientX / window.innerWidth) * 2 - 1,
+      -(e.clientY / window.innerHeight) * 2 + 1
+    );
+    this.raycaster.setFromCamera(clickMouse, this.camera);
     const intersects = this.raycaster.intersectObjects(this.interactiveObjects, true);
 
     if (intersects.length > 0) {
@@ -1320,27 +1345,19 @@ class RetroScene {
 
       if (name === "deskLamp" || name === "lampSwitch" || name === "lampShade" || name === "lampBulb") {
         this.toggleLamp(); // Click anywhere on the lamp to toggle it on/off
-      } else if (
-        name === "crtScreen" ||
-        name === "crtMonitor" ||
-        name === "stickyNote" ||
-        name === "deskSurface" ||
-        name === "deskTop" ||
-        name === "deskMouse"
-      ) {
-        // Clicking anywhere onto the desktop (Mac screen, desk surface, keyboard, mouse) lands in the OS!
-        this.setLamp(true);
-        if (this.cameraMode === "desk") {
-          this.isStickyNoteHovered = false;
-          this.showInspectOverlay(false);
-          window.dispatchEvent(new CustomEvent("enterAgamOS"));
-        }
       } else if (name === "coffeeMug") {
         if (window.audioEngine) window.audioEngine.playBeep(520, 0.08);
       } else if (name === "floppyDisk") {
         if (window.audioEngine) window.audioEngine.playBeep(320, 0.1);
       } else if (name === "pcPowerButton" || name === "monitorPowerButton") {
         window.dispatchEvent(new CustomEvent("rebootAgamOS"));
+      } else {
+        // Any click on the Mac (screen, bezel, chin, stand, body), desk surface, keyboard, mouse, or memo:
+        // Automatically turns on lamp if off, clears note inspection, and lands right in AgamOS!
+        this.setLamp(true);
+        this.isStickyNoteHovered = false;
+        this.showInspectOverlay(false);
+        window.dispatchEvent(new CustomEvent("enterAgamOS"));
       }
     }
   }
