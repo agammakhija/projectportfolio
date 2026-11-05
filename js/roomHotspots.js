@@ -1,7 +1,8 @@
 /**
- * AgamOS & 3D Retro Workstation — 3D Interactive Hotspot Markers
- * Projects dynamic animated arrow pins pointing directly to interactive props in the 3D room.
- * Controlled by a sleek room hints icon button and completely hidden when inside AgamOS desktop.
+ * AgamOS & 3D Retro Workstation — Minimalist 3D Interactive Hotspot Markers
+ * Displays clean animated arrows pointing towards small marker dots at interactive objects.
+ * When hovered / scrolled upon, smoothly reveals how to use each interaction.
+ * Exclusively active in 3D Room view — never in the laptop / AgamOS desktop.
  */
 
 class RoomHotspots {
@@ -18,7 +19,7 @@ class RoomHotspots {
         id: "hotspot-screen",
         target: new THREE.Vector3(0, 1.55, 0.24),
         icon: "🖥️",
-        title: "Mac Display",
+        title: "Mac Retina Display",
         desc: "Click to enter AgamOS",
         arrowClass: "arrow-down",
         onClick: () => {
@@ -30,8 +31,8 @@ class RoomHotspots {
         id: "hotspot-lamp",
         target: new THREE.Vector3(-0.76, 1.95, 0.22),
         icon: "💡",
-        title: "Desk Lamp",
-        desc: "Click to toggle light",
+        title: "Architect Lamp",
+        desc: "Click anywhere to toggle light",
         arrowClass: "arrow-down",
         onClick: () => {
           if (window.retroScene) window.retroScene.toggleLamp();
@@ -41,8 +42,8 @@ class RoomHotspots {
         id: "hotspot-note",
         target: new THREE.Vector3(-0.48, 1.88, 0.25),
         icon: "📝",
-        title: "Sticky Memo",
-        desc: "Hover to zoom & read",
+        title: "Agam's Desk Memo",
+        desc: "Hover to zoom in & read notes",
         arrowClass: "arrow-down",
         onHover: (hovered) => {
           if (window.retroScene && window.retroScene.cameraMode === "desk") {
@@ -63,8 +64,8 @@ class RoomHotspots {
         id: "hotspot-mug",
         target: new THREE.Vector3(-0.65, 1.055, 0.55),
         icon: "☕",
-        title: "Coffee & Disks",
-        desc: "Click for easter egg",
+        title: "Coffee & Floppies",
+        desc: "Click for retro sound easter egg",
         arrowClass: "arrow-down",
         onClick: () => {
           if (window.audioEngine) window.audioEngine.playBeep(520, 0.08);
@@ -92,38 +93,47 @@ class RoomHotspots {
 
       el.innerHTML = `
         <div class="hotspot-wrapper">
-          <div class="hotspot-card" role="button" tabindex="0">
-            <span class="hotspot-icon">${item.icon}</span>
-            <div class="hotspot-info">
-              <span class="hotspot-title">${item.title}</span>
-              <span class="hotspot-desc">${item.desc}</span>
+          <!-- Floating interactive instruction tooltip (reveals on hover / scroll-upon) -->
+          <div class="hotspot-tooltip">
+            <span class="tooltip-icon">${item.icon}</span>
+            <div class="tooltip-content">
+              <span class="tooltip-title">${item.title}</span>
+              <span class="tooltip-desc">${item.desc}</span>
             </div>
           </div>
-          <div class="hotspot-arrow ${item.arrowClass}">
-            <svg viewBox="0 0 24 32" width="22" height="30">
-              <line x1="12" y1="2" x2="12" y2="22" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-              <polygon points="6,20 12,30 18,20" fill="currentColor"/>
-            </svg>
-          </div>
-          <div class="hotspot-pin-anchor">
-            <span class="hotspot-pin-dot"></span>
-            <span class="hotspot-pin-ring"></span>
+
+          <!-- Minimalist Arrow pointing towards the small marker dot -->
+          <div class="hotspot-arrow-pin" role="button" tabindex="0" aria-label="${item.title}: ${item.desc}">
+            <div class="hotspot-arrow">
+              <svg viewBox="0 0 20 28" width="18" height="24">
+                <line x1="10" y1="2" x2="10" y2="18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                <polygon points="5,16 10,24 15,16" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="hotspot-pin-anchor">
+              <span class="hotspot-pin-dot"></span>
+              <span class="hotspot-pin-ring"></span>
+            </div>
           </div>
         </div>
       `;
 
-      // Event handlers
-      const card = el.querySelector(".hotspot-card");
-      if (card) {
-        card.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (item.onClick) item.onClick();
-        });
+      // Event handlers for clicking & hovering
+      const wrapper = el.querySelector(".hotspot-wrapper");
+      const pin = el.querySelector(".hotspot-arrow-pin");
+      const tooltip = el.querySelector(".hotspot-tooltip");
 
-        if (item.onHover) {
-          card.addEventListener("mouseenter", () => item.onHover(true));
-          card.addEventListener("mouseleave", () => item.onHover(false));
-        }
+      const handleClick = (e) => {
+        e.stopPropagation();
+        if (item.onClick) item.onClick();
+      };
+
+      if (pin) pin.addEventListener("click", handleClick);
+      if (tooltip) tooltip.addEventListener("click", handleClick);
+
+      if (wrapper && item.onHover) {
+        wrapper.addEventListener("mouseenter", () => item.onHover(true));
+        wrapper.addEventListener("mouseleave", () => item.onHover(false));
       }
 
       this.container.appendChild(el);
@@ -144,6 +154,29 @@ class RoomHotspots {
     this.updateVisibility();
   }
 
+  setHoveredTarget(targetName) {
+    if (!this.isEnabled || this.mode !== "desk") return;
+
+    const targetMap = {
+      crtScreen: "hotspot-screen",
+      crtMonitor: "hotspot-screen",
+      deskLamp: "hotspot-lamp",
+      lampSwitch: "hotspot-lamp",
+      lampShade: "hotspot-lamp",
+      lampBulb: "hotspot-lamp",
+      stickyNote: "hotspot-note",
+      coffeeMug: "hotspot-mug",
+      floppyDisk: "hotspot-mug"
+    };
+
+    const activeId = targetName ? targetMap[targetName] : null;
+
+    this.hotspotElements.forEach((item) => {
+      const isTarget = activeId && item.el.id === activeId;
+      item.el.classList.toggle("force-hover", Boolean(isTarget));
+    });
+  }
+
   toggle() {
     this.isEnabled = !this.isEnabled;
     if (window.audioEngine) {
@@ -158,13 +191,13 @@ class RoomHotspots {
   }
 
   updateVisibility() {
-    // Only ever visible in desk mode ("not in the laptop at all")
+    // Strictly visible in desk mode — never in the laptop/desktop view
     const isDeskMode = this.mode === "desk";
 
     if (this.toggleBtn) {
       this.toggleBtn.style.display = isDeskMode ? "inline-flex" : "none";
       this.toggleBtn.classList.toggle("active", this.isEnabled);
-      this.toggleBtn.title = this.isEnabled ? "Hide Interactive Hints" : "Show Interactive Hints";
+      this.toggleBtn.title = this.isEnabled ? "Hide Interactive Arrows" : "Show Interactive Arrows";
       const label = this.toggleBtn.querySelector(".hints-label");
       if (label) {
         label.textContent = this.isEnabled ? "Hints ON" : "Hints OFF";
@@ -181,11 +214,39 @@ class RoomHotspots {
   updatePositions(camera) {
     if (!this.isEnabled || this.mode !== "desk" || !camera) return;
 
+    // Detect if the yellow memo note is currently zooming in / inspected
+    const isInspecting = Boolean(
+      this.retroScene &&
+      (this.retroScene.isStickyNoteHovered ||
+       (this.retroScene.noteZoomProgress && this.retroScene.noteZoomProgress > 0.05))
+    );
+
+    if (this.container) {
+      this.container.classList.toggle("inspecting-note", isInspecting);
+    }
+
     const w = window.innerWidth;
     const h = window.innerHeight;
 
     this.hotspotElements.forEach((item) => {
-      this.tempVec.copy(item.target);
+      // When zooming in on the note, the other arrows must disappear!
+      if (isInspecting && item.el.id !== "hotspot-note") {
+        item.el.style.display = "none";
+        return;
+      }
+
+      // Hotspot note dynamically tracks the floating 3D note mesh
+      if (item.el.id === "hotspot-note" && this.retroScene && this.retroScene.stickyNote) {
+        this.tempVec.copy(this.retroScene.stickyNote.position);
+        this.tempVec.y += 0.14; // Position pin cleanly above top edge of note
+        const descEl = item.el.querySelector(".tooltip-desc");
+        if (descEl) {
+          descEl.textContent = isInspecting ? "Move cursor away to set down" : "Hover to zoom in & read notes";
+        }
+      } else {
+        this.tempVec.copy(item.target);
+      }
+
       this.tempVec.project(camera);
 
       // Check if target is in front of the camera
@@ -204,4 +265,3 @@ class RoomHotspots {
 }
 
 window.RoomHotspots = RoomHotspots;
-

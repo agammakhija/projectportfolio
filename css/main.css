@@ -254,8 +254,10 @@ html, body {
 }
 
 /* ==========================================================================
-   3D Interactive Room Hotspots & Animated Indicator Arrows
-   Only displayed in 3D Room overview — Never in the laptop/desktop view
+   3D Interactive Room Hotspots: Minimalist Arrow & Marker Pins
+   By default: only shows an arrow pointing down to a small glowing marker dot.
+   When hovered / scrolled upon: smoothly reveals interaction instructions.
+   Strictly active in 3D Room overview — never in the laptop / AgamOS desktop.
    ========================================================================== */
 
 .room-hotspots-container {
@@ -290,63 +292,88 @@ html, body {
   pointer-events: none;
 }
 
-.hotspot-card {
+/* Tooltip: Hidden by default, reveals on hover upon arrow or marker */
+.hotspot-tooltip {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 50%;
+  transform: translate(-50%, 6px) scale(0.92);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(15, 23, 42, 0.90);
+  background: rgba(15, 23, 42, 0.92);
   backdrop-filter: blur(20px) saturate(190%);
   -webkit-backdrop-filter: blur(20px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.22);
-  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.7), 0 0 18px rgba(56, 189, 248, 0.28);
-  padding: 5px 12px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75), 0 0 20px rgba(56, 189, 248, 0.35);
+  padding: 6px 14px;
   border-radius: 9999px;
-  cursor: pointer;
-  pointer-events: auto;
+  white-space: nowrap;
   user-select: none;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
-              box-shadow 0.22s ease,
-              border-color 0.22s ease,
-              background 0.22s ease;
+  cursor: pointer;
+  z-index: 10;
+  transition: opacity 0.22s ease,
+              transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              visibility 0.22s ease;
 }
 
-.hotspot-card:hover {
-  transform: translateY(-3px) scale(1.05);
-  border-color: rgba(56, 189, 248, 0.75);
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.8), 0 0 25px rgba(56, 189, 248, 0.55);
-  background: rgba(30, 41, 59, 0.96);
+.hotspot-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 5px 5px 0 5px;
+  border-style: solid;
+  border-color: rgba(15, 23, 42, 0.92) transparent transparent transparent;
 }
 
-.hotspot-card:active {
-  transform: translateY(0) scale(0.98);
+.room-hotspot:hover .hotspot-tooltip,
+.room-hotspot.force-hover .hotspot-tooltip {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0) scale(1);
 }
 
-.hotspot-icon {
+.tooltip-icon {
   font-size: 15px;
   line-height: 1;
   flex-shrink: 0;
 }
 
-.hotspot-info {
+.tooltip-content {
   display: flex;
   flex-direction: column;
   text-align: left;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
-.hotspot-title {
+.tooltip-title {
   font-size: 11.5px;
   font-weight: 700;
   color: #f8fafc;
   letter-spacing: 0.2px;
-  white-space: nowrap;
 }
 
-.hotspot-desc {
-  font-size: 9.5px;
+.tooltip-desc {
+  font-size: 10px;
   font-weight: 500;
   color: #94a3b8;
-  white-space: nowrap;
+}
+
+/* Interactive Arrow & Marker Hit Area */
+.hotspot-arrow-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  user-select: none;
+  padding: 4px;
 }
 
 .hotspot-arrow {
@@ -354,19 +381,28 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -2px;
   margin-bottom: -3px;
-  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.75));
-  animation: arrowBounce 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.75));
+  animation: arrowBob 1.8s ease-in-out infinite;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              filter 0.2s ease,
+              color 0.2s ease;
 }
 
-@keyframes arrowBounce {
+@keyframes arrowBob {
   0%, 100% {
     transform: translateY(0);
   }
   50% {
     transform: translateY(4px);
   }
+}
+
+.room-hotspot:hover .hotspot-arrow,
+.room-hotspot.force-hover .hotspot-arrow {
+  color: #7dd3fc;
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 1));
+  transform: scale(1.18);
 }
 
 .hotspot-pin-anchor {
@@ -383,7 +419,15 @@ html, body {
   height: 7px;
   border-radius: 50%;
   background: #38bdf8;
-  box-shadow: 0 0 8px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.8);
+  box-shadow: 0 0 8px #38bdf8, 0 0 16px rgba(56, 189, 248, 0.85);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.room-hotspot:hover .hotspot-pin-dot,
+.room-hotspot.force-hover .hotspot-pin-dot {
+  transform: scale(1.25);
+  background: #ffffff;
+  box-shadow: 0 0 12px #ffffff, 0 0 20px #38bdf8;
 }
 
 .hotspot-pin-ring {
@@ -463,6 +507,16 @@ html, body {
 .hints-label {
   font-size: 11.5px;
   letter-spacing: 0.3px;
+}
+
+/* When zooming in on the note, the other arrows must disappear */
+.room-hotspots-container.inspecting-note .room-hotspot:not(#hotspot-note),
+#sticky-inspect-overlay.active ~ #room-hotspots-container .room-hotspot:not(#hotspot-note) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: scale(0.7);
+  transition: opacity 0.25s ease, visibility 0.25s ease, transform 0.25s ease;
 }
 
 /* Never show in laptop / desktop view */

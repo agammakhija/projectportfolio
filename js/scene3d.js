@@ -1306,6 +1306,11 @@ class RetroScene {
       document.body.style.cursor = "default";
       this.hoveredObject = null;
     }
+
+    // Connect 3D mesh hover with interactive arrow tooltips
+    if (window.roomHotspots && this.cameraMode === "desk") {
+      window.roomHotspots.setHoveredTarget(hoveredTargetName);
+    }
   }
 
   onSceneClick(e) {
