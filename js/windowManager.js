@@ -80,6 +80,142 @@ class WindowManager {
         }
       });
     });
+
+    // Initialize fluid macOS Dock magnification wave
+    this.setupDockWave();
+  }
+
+  setupDockWave() {
+    const dock = document.getElementById("macos-dock");
+    if (!dock) return;
+
+    const dockItems = Array.from(dock.querySelectorAll(".dock-item"));
+    if (dockItems.length === 0) return;
+
+    // Authentic macOS Dock magnification parameters
+    const SPREAD_DISTANCE = 145; // Pixel radius of influence (~2.5 icons on each side)
+    const MAX_SCALE = 1.70;       // Max magnification scale under cursor
+    const BASE_SCALE = 1.0;
+
+    let targetMouseX = null;
+    let currentMouseX = null;
+    let isInside = false;
+    let rafId = null;
+    let itemOffsets = [];
+
+    // Pre-calculate resting centers from offsetLeft (immune to transforms, 0 layout reflow)
+    const cacheOffsets = () => {
+      itemOffsets = dockItems.map(item => item.offsetLeft + item.offsetWidth / 2);
+    };
+
+    const updateWave = () => {
+      if (!isInside || targetMouseX === null) {
+        dock.classList.remove("is-waving");
+        dockItems.forEach(item => {
+          item.style.transform = "";
+          item.style.zIndex = "";
+          item.style.removeProperty("--dock-scale");
+        });
+        currentMouseX = null;
+        targetMouseX = null;
+        rafId = null;
+        return;
+      }
+
+      // Physics lerp: 0.44 interpolation gives buttery liquid response without lag
+      if (currentMouseX === null) {
+        currentMouseX = targetMouseX;
+      } else {
+        currentMouseX += (targetMouseX - currentMouseX) * 0.44;
+      }
+
+      if (Math.abs(targetMouseX - currentMouseX) < 0.2) {
+        currentMouseX = targetMouseX;
+      }
+
+      const dockRect = dock.getBoundingClientRect();
+      const dockLeft = dockRect.left;
+
+      for (let i = 0; i < dockItems.length; i++) {
+        const item = dockItems[i];
+        const itemCenterX = dockLeft + itemOffsets[i];
+        const dist = Math.abs(currentMouseX - itemCenterX);
+
+        if (dist < SPREAD_DISTANCE) {
+          const percent = dist / SPREAD_DISTANCE;
+          // Genuine cosine bell curve: 0 derivative at both center and boundary
+          const wave = (Math.cos(percent * Math.PI) + 1) / 2;
+          const scale = BASE_SCALE + (MAX_SCALE - BASE_SCALE) * wave;
+          const liftY = (scale - 1) * 14;
+
+          // Natural horizontal parting so adjacent icons make room for the magnified item
+          const deltaX = itemCenterX - currentMouseX;
+          const pushX = Math.sin(percent * Math.PI) * (deltaX > 0 ? 1 : -1) * 11;
+
+          item.style.transform = `translate3d(${pushX.toFixed(2)}px, -${liftY.toFixed(2)}px, 0) scale(${scale.toFixed(3)})`;
+          item.style.zIndex = `${Math.round(wave * 50) + 10}`;
+          item.style.setProperty("--dock-scale", scale.toFixed(3));
+        } else {
+          item.style.transform = "translate3d(0, 0, 0) scale(1)";
+          item.style.zIndex = "1";
+          item.style.setProperty("--dock-scale", "1");
+        }
+      }
+
+      if (isInside) {
+        rafId = requestAnimationFrame(updateWave);
+      } else {
+        rafId = null;
+      }
+    };
+
+    const onMouseEnter = (e) => {
+      isInside = true;
+      cacheOffsets();
+      dock.classList.add("is-waving");
+      targetMouseX = e.clientX;
+      if (currentMouseX === null) currentMouseX = e.clientX;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateWave);
+      }
+    };
+
+    const onMouseMove = (e) => {
+      if (!isInside) {
+        isInside = true;
+        cacheOffsets();
+        dock.classList.add("is-waving");
+      }
+      targetMouseX = e.clientX;
+      if (!rafId) {
+        rafId = requestAnimationFrame(updateWave);
+      }
+    };
+
+    const onMouseLeave = () => {
+      isInside = false;
+      targetMouseX = null;
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      dock.classList.remove("is-waving");
+      dockItems.forEach(item => {
+        item.style.transform = "";
+        item.style.zIndex = "";
+        item.style.removeProperty("--dock-scale");
+      });
+      currentMouseX = null;
+    };
+
+    dock.addEventListener("mouseenter", onMouseEnter);
+    dock.addEventListener("mousemove", onMouseMove);
+    dock.addEventListener("mouseleave", onMouseLeave);
+
+    // Initial cache once DOM is stable
+    setTimeout(cacheOffsets, 100);
+    window.addEventListener("resize", cacheOffsets);
+    window.addEventListener("blur", onMouseLeave);
   }
 
   updateDockIndicators() {
@@ -329,17 +465,31 @@ class WindowManager {
     const icons = document.querySelectorAll(".desktop-icon");
     icons.forEach(icon => {
       const appId = icon.getAttribute("data-app");
+      let lastClick = 0;
 
-      // Single click selects
+      // Click: single click selects, double click or second click opens!
       icon.addEventListener("click", (e) => {
         e.stopPropagation();
+        const now = Date.now();
+        const wasSelected = icon.classList.contains("selected");
+
         icons.forEach(i => i.classList.remove("selected"));
         icon.classList.add("selected");
+
         if (window.audioEngine) window.audioEngine.playClick();
+
+        // If clicked again while selected or rapid double-tap, open app immediately!
+        if (wasSelected || (now - lastClick < 500)) {
+          this.openApp(appId);
+          lastClick = 0;
+        } else {
+          lastClick = now;
+        }
       });
 
       // Double click opens app
-      icon.addEventListener("dblclick", () => {
+      icon.addEventListener("dblclick", (e) => {
+        e.stopPropagation();
         this.openApp(appId);
       });
     });

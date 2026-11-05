@@ -12,9 +12,9 @@
   width: 100%;
   height: 100%;
   z-index: 10;
-  pointer-events: none !important;
   opacity: 0;
   visibility: hidden;
+  pointer-events: none;
   transform: scale(0.96);
   display: flex;
   align-items: center;
@@ -22,17 +22,47 @@
   transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease;
 }
 
+#crt-screen-wrapper:not(.fullscreen-mode) {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 #crt-screen-wrapper:not(.fullscreen-mode) * {
   pointer-events: none !important;
 }
 
-/* When zoomed into monitor / screen mode */
+/* When zoomed into monitor / screen mode (AgamOS Mac active) */
 #crt-screen-wrapper.fullscreen-mode {
-  opacity: 1;
-  visibility: visible;
-  transform: scale(1);
-  pointer-events: auto;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: scale(1) !important;
+  pointer-events: auto !important;
   z-index: 40;
+}
+
+#crt-screen-wrapper.fullscreen-mode #crt-screen-frame,
+#crt-screen-wrapper.fullscreen-mode #desktop,
+#crt-screen-wrapper.fullscreen-mode .desktop-icons-container,
+#crt-screen-wrapper.fullscreen-mode .desktop-icon,
+#crt-screen-wrapper.fullscreen-mode .macos-menubar,
+#crt-screen-wrapper.fullscreen-mode .menubar-item,
+#crt-screen-wrapper.fullscreen-mode .menubar-pill-btn,
+#crt-screen-wrapper.fullscreen-mode .menubar-icon-btn,
+#crt-screen-wrapper.fullscreen-mode .macos-dock,
+#crt-screen-wrapper.fullscreen-mode .dock-item,
+#crt-screen-wrapper.fullscreen-mode .dock-icon-wrapper,
+#crt-screen-wrapper.fullscreen-mode .launchpad-overlay,
+#crt-screen-wrapper.fullscreen-mode .launchpad-container,
+#crt-screen-wrapper.fullscreen-mode .launchpad-app,
+#crt-screen-wrapper.fullscreen-mode .window,
+#crt-screen-wrapper.fullscreen-mode .window * {
+  pointer-events: auto !important;
+}
+
+#crt-screen-wrapper.fullscreen-mode .crt-vignette,
+#crt-screen-wrapper.fullscreen-mode .crt-scanlines {
+  pointer-events: none !important;
 }
 
 #crt-screen-frame {
@@ -578,13 +608,24 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  padding-bottom: 2px;
   cursor: pointer;
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: bottom center;
+  will-change: transform;
+  /* Authentic macOS spring ease-out when cursor leaves the dock */
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.dock-item:hover {
-  transform: scale(1.22) translateY(-6px);
+/* While mousewave is actively moving, JS physics lerp drives transform directly with 0ms latency */
+.macos-dock.is-waving .dock-item {
+  transition: none !important;
+  animation: none !important;
+}
+
+/* Fallback hover when script is not waving */
+.macos-dock:not(.is-waving) .dock-item:hover {
+  transform: translateY(-4px) scale(1.08);
 }
 
 .dock-icon-wrapper {
@@ -721,24 +762,26 @@
 /* Dock Tooltip */
 .dock-tooltip {
   position: absolute;
-  bottom: 58px;
+  bottom: calc(100% + 12px);
   left: 50%;
-  transform: translateX(-50%);
-  background: rgba(15, 23, 42, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  transform: translateX(-50%) scale(calc(1 / var(--dock-scale, 1)));
+  transform-origin: bottom center;
+  background: rgba(15, 23, 42, 0.90);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   color: #ffffff;
   padding: 4px 10px;
-  border-radius: 6px;
+  border-radius: 7px;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 500;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.15s ease;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  z-index: 500;
 }
 
 .dock-item:hover .dock-tooltip {
@@ -752,17 +795,57 @@
   margin: 0 4px;
 }
 
-/* Dock Bounce Animation */
+/* Dock Bounce Animation (plays on the icon wrapper so it never conflicts with wave transforms) */
 @keyframes dockBounce {
   0%, 100% { transform: translateY(0); }
-  30% { transform: translateY(-16px); }
+  25% { transform: translateY(-22px); }
   50% { transform: translateY(0); }
-  70% { transform: translateY(-8px); }
+  75% { transform: translateY(-10px); }
 }
 
-.dock-bounce {
+.dock-item.dock-bounce .dock-icon-wrapper {
   animation: dockBounce 0.6s cubic-bezier(0.28, 0.84, 0.42, 1);
 }
+
+/* ==========================================================================
+   Staggered macOS Dock Entrance Wave Animation
+   Icons rise up one after another in a fluid wave upon entering the desktop
+   ========================================================================== */
+
+@keyframes dockWaveRise {
+  0% {
+    opacity: 0;
+    transform: translateY(48px) scale(0.6);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.14);
+  }
+  80% {
+    transform: translateY(2px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+#crt-screen-wrapper.fullscreen-mode .dock-item {
+  animation: dockWaveRise 0.58s cubic-bezier(0.2, 0.85, 0.35, 1.2) backwards;
+}
+
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(1)  { animation-delay: 0.03s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(2)  { animation-delay: 0.06s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(3)  { animation-delay: 0.09s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(4)  { animation-delay: 0.12s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(5)  { animation-delay: 0.15s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(6)  { animation-delay: 0.18s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(7)  { animation-delay: 0.21s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(8)  { animation-delay: 0.24s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(9)  { animation-delay: 0.27s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(10) { animation-delay: 0.30s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(12) { animation-delay: 0.34s; }
+#crt-screen-wrapper.fullscreen-mode .dock-item:nth-child(13) { animation-delay: 0.38s; }
 
 /* ==========================================================================
    Spotlight Search Modal
